@@ -1,0 +1,1 @@
+namespace Samples.SimpleSample { public static class Launcher { public static void Run() { Program.Main(new string[0]); } } }

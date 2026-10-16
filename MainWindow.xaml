@@ -1,0 +1,1399 @@
+<Window x:Class="hehshihbeen_compiler.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:local="clr-namespace:hehshihbeen_compiler"
+        xmlns:uc="clr-namespace:hehshihbeen_compiler.选卡控件"
+        Title="中文汇编编译器" Height="900" Width="1440"
+        PreviewKeyDown="快捷键_预览"
+        WindowStartupLocation="CenterScreen"
+        WindowStyle="None"
+        Icon="/assets/汇编_0.png">
+
+    <Window.Resources>
+        <!-- 主题动态资源(应用主题时更新,供 Border/TextBlock 等引用) -->
+        <SolidColorBrush x:Key="主题面板刷" Color="#FFFFFFFF"/>
+        <SolidColorBrush x:Key="主题内容刷" Color="#FFF0F0F0"/>
+        <SolidColorBrush x:Key="主题前景刷" Color="#FF1E1E1E"/>
+        <SolidColorBrush x:Key="主题强调刷" Color="#FF0078D7"/>
+<!-- 菜单那一条(第228批起):暗/亮两套是老样子,风格主题下跟着变 -->
+<SolidColorBrush x:Key="主题菜单刷" Color="#FF2D2D30"/>
+<SolidColorBrush x:Key="主题悬停刷" Color="#FF3D3D40"/>
+<SolidColorBrush x:Key="主题菜单字刷" Color="#FFFFFFFF"/>
+
+        <!-- 标签页头:让整片 Tab 面板随主题变色 -->
+        <Style x:Key="标签头样式" TargetType="TabItem">
+            <Setter Property="Foreground" Value="{DynamicResource 主题前景刷}"/>
+            <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+            <!-- H61-3:双击标签头(标题文字以外那一圈)= 把预览页固定成普通页。
+                 双击**标题文字**仍然是改文件名 —— 那条路的 `标题框_MouseDoubleClick` 会 `e.Handled = true`,
+                 冒泡到不了这里。 -->
+            <EventSetter Event="MouseDoubleClick" Handler="标签头_双击"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="TabItem">
+                        <Border x:Name="头边框"
+                                Background="{DynamicResource 主题内容刷}"
+                                BorderBrush="{DynamicResource 主题面板刷}"
+                                BorderThickness="0,0,1,0"
+                                CornerRadius="5,5,0,0"
+                                Margin="1,3,0,0"
+                                Padding="10,5">
+                            <ContentPresenter ContentSource="Header"
+                                              VerticalAlignment="Center"
+                                              RecognizesAccessKey="True"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsSelected" Value="True">
+                                <Setter TargetName="头边框" Property="Background" Value="{DynamicResource 主题面板刷}"/>
+                                <Setter TargetName="头边框" Property="BorderThickness" Value="0"/>
+                                <Setter TargetName="头边框" Property="Margin" Value="1,2,-1,0"/>
+                            </Trigger>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="头边框" Property="Background" Value="{DynamicResource 主题面板刷}"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <!-- 标签页模板(按"启动页/选项页/普通页"分流) -->
+        <!-- 标签头上的关闭按钮:必须把全局 Button 样式里的 Padding/Margin 顶掉,否则 ✕ 会被裁掉 -->
+        <Style x:Key="标签关闭按钮样式" TargetType="Button">
+            <Setter Property="Width" Value="18"/>
+            <Setter Property="Height" Value="18"/>
+            <Setter Property="MinWidth" Value="0"/>
+            <Setter Property="Padding" Value="0"/>
+            <Setter Property="Margin" Value="0"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+        </Style>
+
+        <DataTemplate x:Key="普通头模板">
+            <StackPanel Orientation="Horizontal" Margin="0,0,4,0" VerticalAlignment="Center">
+                <!-- C21:页头显示 `显示标题`(= 标题;有未保存改动时后面多一个 ` *`) -->
+                <!-- H61-3:预览(临时)页的页头**斜体**(口径:斜体 = 临时打开;一编辑 / 双击标签头就固定) -->
+                <!-- 页头那个文件名的字色:**必须自己写一句**(下面 `Foreground` 那一行)。
+                     `TextBox` 的 `Foreground` 是它**模板里自己那一格**(默认黑),不像 `TextBlock` 那样吃父级继承 ——
+                     漏了这一句,暗 / 黑客帝国 / 赛博朋克三套暗底下页头上的文件名就是黑字压深色页头,看不见。
+                     照 `TabItem` 那条同样的动态刷走 ⇒ 亮色主题下它自己会落回近黑,老样子不变。 -->
+                <TextBox Text="{Binding 显示标题, Mode=OneWay}"
+                         VerticalAlignment="Center"
+                         Margin="0,0,6,0"
+                         MinWidth="60"
+                         IsReadOnly="True"
+                         Cursor="Arrow"
+                         Background="Transparent"
+                         BorderThickness="0"
+                         Padding="0"
+                         Foreground="{DynamicResource 主题前景刷}"
+                         MouseDoubleClick="标题框_MouseDoubleClick"
+                         PreviewMouseLeftButtonDown="标题框_模拟选卡页标题单击"
+                         KeyDown="标题框_KeyDown"
+                         LostFocus="标题框_LostFocus">
+                    <TextBox.Style>
+                        <Style TargetType="TextBox">
+                            <Setter Property="ToolTip" Value="双击修改文件名"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding 是临时页}" Value="True">
+                                    <Setter Property="FontStyle" Value="Italic"/>
+                                    <Setter Property="ToolTip"
+                                            Value="预览页(斜体):编辑一下、双击标签头空白处、或者再双击导图里那一格,都会固定成普通页;双击标题本身仍是改文件名"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TextBox.Style>
+                </TextBox>
+                <Button Content="✕"
+                        Style="{StaticResource 标签关闭按钮样式}"
+                        ToolTip="关闭标签页"
+                        VerticalAlignment="Center"
+                        Click="标签关闭按钮_Click"/>
+            </StackPanel>
+        </DataTemplate>
+        <DataTemplate x:Key="选项头模板">
+            <StackPanel Orientation="Horizontal" Margin="0,0,4,0" VerticalAlignment="Center">
+                <TextBlock Text="⚙ 选项" FontWeight="Bold" VerticalAlignment="Center" Margin="4,0,6,0"/>
+                <Button Content="✕"
+                        Style="{StaticResource 标签关闭按钮样式}"
+                        ToolTip="关闭选项页"
+                        VerticalAlignment="Center"
+                        Click="关闭选项页_Click"/>
+            </StackPanel>
+        </DataTemplate>
+        <DataTemplate x:Key="普通内容模板">
+            <Border Background="{DynamicResource 主题面板刷}" Padding="15" CornerRadius="5">
+                <local:编辑器 内容="{Binding 内容, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+            </Border>
+        </DataTemplate>
+        <DataTemplate x:Key="选项内容模板">
+            <local:选项页/>
+        </DataTemplate>
+        <local:标签头模板选择器 x:Key="头选择"
+                        普通头="{StaticResource 普通头模板}"
+                        选项头="{StaticResource 选项头模板}"/>
+        <local:内容模板选择器 x:Key="内容选择"
+                       普通内容="{StaticResource 普通内容模板}"
+                       选项内容="{StaticResource 选项内容模板}"/>
+
+        <!-- 按钮样式（保持不变） -->
+        <Style x:Key="ButtonStyle" TargetType="Button">
+            <Setter Property="Width" Value="35"/>
+            <Setter Property="Height" Value="30"/>
+            <Setter Property="BorderBrush" Value="Transparent" />
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="LightGray"/>
+                </Trigger>
+                <!-- 禁用时变暗(灰掉):不然光看图标看不出这个按钮现在点不动 -->
+                <Trigger Property="IsEnabled" Value="False">
+                    <Setter Property="Opacity" Value="0.35"/>
+                    <Setter Property="Background" Value="Transparent"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <!-- 工具栏上的文字按钮(调试那几个):和图标按钮同高,但用文字说清楚干嘛的 -->
+        <Style x:Key="工具栏文字按钮样式" TargetType="Button">
+            <Setter Property="Height" Value="24"/>
+            <Setter Property="Padding" Value="9,0"/>
+            <Setter Property="Margin" Value="2,0"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="Foreground" Value="{DynamicResource 主题前景刷}"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderBrush" Value="#40808080"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#20808080"/>
+                </Trigger>
+                <Trigger Property="IsEnabled" Value="False">
+                    <Setter Property="Opacity" Value="0.35"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <!-- ToolTip 样式（保持不变） -->
+        <Style TargetType="ToolTip">
+            <Setter Property="Background" Value="Silver"/>
+            <Setter Property="BorderBrush" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Foreground" Value="Black"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+        </Style>
+
+        <!-- 页内小标签(输出/异常):与主题联动,无关闭钮 -->
+        <Style x:Key="页内标签头" TargetType="TabItem">
+            <Setter Property="Foreground" Value="{DynamicResource 主题前景刷}"/>
+            <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="TabItem">
+                        <Border x:Name="Bd"
+                                Background="{DynamicResource 主题内容刷}"
+                                BorderBrush="{DynamicResource 主题面板刷}"
+                                BorderThickness="0,0,1,0"
+                                Padding="12,4"
+                                SnapsToDevicePixels="True">
+                            <ContentPresenter ContentSource="Header" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsSelected" Value="True">
+                                <Setter TargetName="Bd" Property="Background" Value="{DynamicResource 主题面板刷}"/>
+                                <Setter TargetName="Bd" Property="BorderThickness" Value="0,2,1,0"/>
+                                <Setter TargetName="Bd" Property="BorderBrush" Value="{DynamicResource 主题强调刷}"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <!-- 工具按钮统一样式:禁用时自动变淡(不用换图标也能一眼看出"禁止") -->
+        <Style TargetType="Button">
+            <Setter Property="Padding" Value="8,3"/>
+            <Setter Property="Margin" Value="0,0,4,0"/>
+            <Style.Triggers>
+                <Trigger Property="IsEnabled" Value="False">
+                    <Setter Property="Opacity" Value="0.35"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <!-- 不包含顶层菜单 -->
+        <Style x:Key="MenuItemStyle" TargetType="MenuItem">
+            <Setter Property="Background" Value="{DynamicResource 主题菜单刷}"/>
+            <Setter Property="Foreground" Value="{DynamicResource 主题菜单字刷}"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="MenuItem">
+                        <Grid>
+                            <Border x:Name="Bd"
+                                    Background="{TemplateBinding Background}"
+                                    Padding="35,2"
+                                    SnapsToDevicePixels="True">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <ContentPresenter ContentSource="Header"
+                                                      RecognizesAccessKey="True"
+                                                      Grid.Column="0"/>
+                                    <!-- 箭头 -->
+                                    <Path x:Name="Arrow"
+                                          Grid.Column="1"
+                                          Data="M 0 0 L 4 4 L 0 8 Z"
+                                          Fill="{DynamicResource 主题菜单字刷}"
+                                          Margin="8,0,0,0"
+                                          VerticalAlignment="Center"
+                                          Visibility="Collapsed"/>
+                                </Grid>
+                            </Border>
+
+                            <Popup x:Name="PART_Popup"
+                                   Placement="Right"
+                                   AllowsTransparency="True"
+                                   Focusable="False"
+                                   IsOpen="{TemplateBinding IsSubmenuOpen}">
+                                <Border Background="{TemplateBinding Background}"
+                                        BorderBrush="{TemplateBinding BorderBrush}"
+                                        BorderThickness="1"
+                                        CornerRadius="2"
+                                        Padding="2">
+                                    <StackPanel IsItemsHost="True"/>
+                                </Border>
+                            </Popup>
+                        </Grid>
+
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Bd" Property="Background" Value="{DynamicResource 主题悬停刷}"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter Property="Foreground" Value="Gray"/>
+                            </Trigger>
+                            <!-- 子菜单项：左边留出图标列 -->
+                            <Trigger Property="Role" Value="SubmenuItem">
+                                <Setter TargetName="Bd" Property="Padding" Value="35,2,8,2"/>
+                            </Trigger>
+                            <!-- 子菜单里的有下级项：同样缩进 -->
+                            <Trigger Property="Role" Value="SubmenuHeader">
+                                <Setter TargetName="Bd" Property="Padding" Value="35,2,8,2"/>
+                            </Trigger>
+                            <!-- 关键：有下级菜单时显示箭头 -->
+                            <Trigger Property="Role" Value="SubmenuHeader">
+                                <Setter TargetName="Arrow" Property="Visibility" Value="Visible"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <!-- 包含顶层菜单 -->
+        <Style x:Key="SubMenuItemStyle" TargetType="MenuItem">
+            <Setter Property="Background" Value="{DynamicResource 主题菜单刷}"/>
+            <Setter Property="Foreground" Value="{DynamicResource 主题菜单字刷}"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="MenuItem">
+                        <Grid>
+                            <!-- 菜单项头部（保留默认显示） -->
+                            <Border x:Name="Bd"
+                                    Background="{TemplateBinding Background}" Padding="4,2" SnapsToDevicePixels="True">
+                                <ContentPresenter ContentSource="Header" RecognizesAccessKey="True"/>
+                            </Border>
+                            <!-- 子菜单 Popup -->
+                            <Popup x:Name="PART_Popup"
+                                   Placement="Bottom"
+                                   AllowsTransparency="True"
+                                   Focusable="False"
+                                   IsOpen="{TemplateBinding IsSubmenuOpen}">
+                                <Border Background="{TemplateBinding Background}"
+                                        BorderBrush="{TemplateBinding BorderBrush}"
+                                        BorderThickness="1"
+                                        CornerRadius="2"
+                                        Padding="2">
+                                    <StackPanel IsItemsHost="True"/>
+                                </Border>
+                            </Popup>
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Bd" Property="Background" Value="{DynamicResource 主题悬停刷}"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter Property="Foreground" Value="Gray"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="AllMenuItemStyle" TargetType="MenuItem">
+            <Setter Property="Background" Value="{DynamicResource 主题菜单刷}"/>
+            <Setter Property="Foreground" Value="{DynamicResource 主题菜单字刷}"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="MenuItem">
+                        <Grid>
+                            <Border x:Name="Bd"
+                                    Background="{TemplateBinding Background}"
+                                    Padding="4,2"
+                                    SnapsToDevicePixels="True">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="22"/>     <!-- 勾选列(定宽:勾与不勾的标题不会左右错位) -->
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>   <!-- 快捷键文字(InputGestureText) -->
+                                        <ColumnDefinition Width="Auto"/>   <!-- 箭头 -->
+                                    </Grid.ColumnDefinitions>
+
+                                    <!-- 勾:`IsCheckable` 的项(视图开关、汇编源码参与编译…)原来在这个模板里看不见勾 -->
+                                    <Path x:Name="Check"
+                                          Grid.Column="0"
+                                          Data="M 0 4 L 3.2 7 L 9 -1"
+                                          Stroke="White"
+                                          StrokeThickness="1.6"
+                                          HorizontalAlignment="Center"
+                                          VerticalAlignment="Center"
+                                          Visibility="Collapsed"/>
+
+                                    <ContentPresenter ContentSource="Header"
+                                                      RecognizesAccessKey="True"
+                                                      Grid.Column="1"
+                                                      VerticalAlignment="Center"/>
+
+                                    <!-- 快捷键文字(WPF 默认模板会显示它,自绘模板别忘了这一格) -->
+                                    <TextBlock Grid.Column="2"
+                                               Text="{TemplateBinding InputGestureText}"
+                                               Foreground="#B9B9BC"
+                                               Margin="24,0,4,0"
+                                               VerticalAlignment="Center"/>
+
+                                    <!-- 箭头：只有子菜单里的有下级项才显示 -->
+                                    <Path x:Name="Arrow"
+                                          Grid.Column="3"
+                                          Data="M 0 0 L 4 4 L 0 8 Z"
+                                          Fill="{DynamicResource 主题菜单字刷}"
+                                          Margin="8,0,0,0"
+                                          VerticalAlignment="Center"
+                                          Visibility="Collapsed"/>
+                                </Grid>
+                            </Border>
+
+                            <Popup x:Name="PART_Popup"
+                                   Placement="Bottom"
+                                   AllowsTransparency="True"
+                                   Focusable="False"
+                                   IsOpen="{TemplateBinding IsSubmenuOpen}">
+                                <Border Background="{TemplateBinding Background}"
+                                        BorderBrush="{TemplateBinding BorderBrush}"
+                                        BorderThickness="1"
+                                        CornerRadius="2"
+                                        Padding="2">
+                                    <StackPanel IsItemsHost="True"/>
+                                </Border>
+                            </Popup>
+                        </Grid>
+
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Bd" Property="Background" Value="{DynamicResource 主题悬停刷}"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter Property="Foreground" Value="Gray"/>
+                            </Trigger>
+
+                            <!-- 勾选状态(IsCheckable 的项:勾在这里画,和系统默认模板一样) -->
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter TargetName="Check" Property="Visibility" Value="Visible"/>
+                            </Trigger>
+
+                            <!-- 子菜单项:缩进 = 勾选列 22 + 这里 12,凑成原来那 35 -->
+                            <Trigger Property="Role" Value="SubmenuItem">
+                                <Setter TargetName="Bd" Property="Padding" Value="12,2,8,2"/>
+                            </Trigger>
+
+                            <!-- 子菜单里的有下级项：缩进 + 向右弹出 + 显示箭头 -->
+                            <Trigger Property="Role" Value="SubmenuHeader">
+                                <Setter TargetName="Bd" Property="Padding" Value="12,2,8,2"/>
+                                <Setter TargetName="PART_Popup" Property="Placement" Value="Right"/>
+                                <Setter TargetName="Arrow" Property="Visibility" Value="Visible"/>
+                            </Trigger>
+
+                            <!-- 顶级有下级项：向下弹出，不缩进，不显示箭头 -->
+                            <Trigger Property="Role" Value="TopLevelHeader">
+                                <Setter TargetName="PART_Popup" Property="Placement" Value="Bottom"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- 子菜单项统一走暗色(第169批,bug 3)：
+             以前只给**顶层**菜单项写了 SubMenuItemStyle,子菜单项(手写的那一堆 + `建片段菜单()` 现场生成的那些)
+             落到 WPF 的默认模板 ⇒ 父项那身 Foreground=White 被继承下去,在亮色系统主题下就是"灰底白字",
+             和暗色标题栏两张皮(用户实测报的:编辑 → 插入代码片段)。
+             隐式样式(不写 x:Key)正好管这一片:凡是没显式写 Style 的 MenuItem 一律走它 ——
+             手写项与现场生成项一起管住;顶层那几项写了 Style,按 WPF 的规矩显式优先,不受影响。 -->
+        <Style TargetType="MenuItem" BasedOn="{StaticResource AllMenuItemStyle}"/>
+    </Window.Resources>
+
+    <!-- WindowChrome：保留调整边框和拖拽行为 -->
+    <WindowChrome.WindowChrome>
+        <WindowChrome GlassFrameThickness="0"
+                      CaptionHeight="30"
+                      ResizeBorderThickness="6" />
+        <!-- 调整窗口大小的边框宽度 -->
+    </WindowChrome.WindowChrome>
+    <Window.DataContext>
+        <uc:主视图模型 />
+    </Window.DataContext>
+    <Grid Margin="0">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="30"/>
+            <!-- 标题栏行（固定高度） -->
+            <RowDefinition Height="Auto"/>
+            <!-- 工具栏行 -->
+            <RowDefinition Height="*"/>
+            <!-- 主内容区 -->
+            <RowDefinition Height="Auto"/>
+            <!-- 运行监视条(H100 第一步):执行中实时看 状态 / PC / 条数 / 条每秒 / 子进程 CPU 与物理内存 -->
+        </Grid.RowDefinitions>
+
+        <!-- ========== 标题栏（三栏布局） ========== -->
+        <Grid Grid.Row="0" Background="{DynamicResource 主题菜单刷}">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- 左：应用图标 -->
+            <Image Grid.Column="0"
+                   Source="{Binding RelativeSource={RelativeSource AncestorType=Window}, Path=Icon}"
+                   Width="30" Height="30" Margin="2,0,0,0"
+                   Stretch="Uniform" />
+
+            <!-- 中：菜单 -->
+            <!-- 菜单项 / 按钮的 `x:Name` 只给**要按状态开关**的那些起(`刷新命令可用性()` 里按名开 `IsEnabled`);
+                 一直可用的条目不起名(H30:起了名却全仓没人用 = "有壳没接线",下一个接手的人白找一遍) -->
+            <Menu x:Name="主菜单"
+                  Grid.Column="1"
+                  HorizontalAlignment="Left"
+                  VerticalAlignment="Center"
+                  WindowChrome.IsHitTestVisibleInChrome="True" >
+                <MenuItem Header="文件(_F)" Style="{StaticResource SubMenuItemStyle}">
+                    <MenuItem Header="新建项目(_N)…" Click="新建项目_Click"
+                              ToolTip="建 项目目录 + 工程文件(.hbp) + 主程序.hb,建好直接打开主程序.hb"/>
+                    <MenuItem x:Name="新建文件菜单" Header="新建文件(_F)…" Click="新建文件_Click"
+                              ToolTip="在项目目录里新建一个 .hb;没有项目时不可用"/>
+                    <Separator/>
+                    <MenuItem Header="打开项目(_P)…" Click="打开项目_Click"
+                              ToolTip="读工程文件(.hbp):按里面的路径读出文件与子工程"/>
+                    <MenuItem Header="打开文件(_O)…" Click="打开文件_Click"
+                              ToolTip="只打开文件看/改;没有项目时不能编译执行"/>
+                    <MenuItem x:Name="添加项目菜单" Header="添加项目(_D)…" Click="添加项目_Click"
+                              ToolTip="把另一个项目加进当前方案;新建项目/打开项目只留一个,只有这里能让多个项目同时存在"/>
+                    <Separator/>
+                    <MenuItem x:Name="生成工程文件菜单" Header="生成工程文件(_G)" Click="新建工程文件_Click"
+                              ToolTip="在项目目录里生成 工程文件.hbp(列出所有 .hb 与资源),之后可自己编辑"/>
+                    <Separator/>
+                    <MenuItem Header="保存(_S)" Click="保存_Click"/>
+                    <MenuItem Header="另存为(_A)" Click="另存为_Click"/>
+                    <Separator/>
+                    <MenuItem x:Name="关闭标签菜单" Header="关闭标签页(_T)" Click="菜单关闭标签_Click"/>
+                </MenuItem>
+                <MenuItem Header="编辑(_E)" Style="{StaticResource SubMenuItemStyle}">
+                    <MenuItem x:Name="撤销菜单" Header="撤销(_U)" Click="撤销按钮_Click"/>
+                    <MenuItem x:Name="重做菜单" Header="重做(_R)" Click="重做按钮_Click"/>
+                    <Separator/>
+                    <MenuItem x:Name="复制菜单" Header="复制(_C)" Click="菜单复制_Click"/>
+                    <MenuItem x:Name="粘贴菜单" Header="粘贴(_P)" Click="菜单粘贴_Click"/>
+                    <MenuItem x:Name="删除菜单" Header="删除(_D)" Click="菜单删除_Click"/>
+                    <MenuItem x:Name="全选菜单" Header="全选(_A)" Click="菜单全选_Click"/>
+                    <Separator/>
+                    <MenuItem x:Name="查找菜单" Header="查找…(_F)" Click="查找_Click" InputGestureText="Ctrl+F"
+                              ToolTip="打开编辑器自带的查找面板(找 + 高亮 + F3 下一个);要**替换**用下面两项(会先给改动预览)"/>
+                    <MenuItem x:Name="替换当前菜单" Header="替换(当前文件)…(_H)" Click="替换当前文件_Click" InputGestureText="Ctrl+H"
+                              ToolTip="只在当前文件里替换:先给改动预览,确认后才改;注释与字符串里的文字不会被改(只改文本、不自动存盘,Ctrl+S 存)"/>
+                    <MenuItem Header="全工程替换…(_G)" Click="全工程替换_Click"
+                              ToolTip="在整个工程里把一段文字批量换掉:先给改动预览,确认后才逐文件落盘;注释与字符串里的文字不会被改"/>
+                    <Separator/>
+                    <MenuItem x:Name="格式化菜单" Header="格式化当前文件(_F)" Click="格式化_Click" InputGestureText="Ctrl+Shift+F"
+                              ToolTip="按块深度重排缩进 + 修行尾空白:先给改动预览再确认;只动空白,注释与字符串一个字符不碰,编译结果逐字节不变"/>
+                    <MenuItem x:Name="片段菜单" Header="插入代码片段(_I)"
+                              ToolTip="函数 / 如果 / 当 / 循环 / 遍历 / 选择 / 结构 / 测试 这些骨架,插到光标处并按当前层级缩进好">
+                        <!-- 条目在窗口构造时按 片段表C.全部 生成(不手抄一份;数据只有引擎那一处) -->
+                    </MenuItem>
+                    <Separator/>
+                    <MenuItem x:Name="语义对齐菜单" Header="语义列对齐(_F)" Click="菜单语义对齐_Click"/>
+                    <Separator/>
+                    <MenuItem x:Name="重命名菜单" Header="重命名(_M)" Click="重命名_Click"
+                              ToolTip="把光标下那个名字在整个工程里改掉:先给一份改动预览,确认后才逐文件落盘;注释与字符串里的同名文字不会被改"/>
+                    <Separator/>
+                    <MenuItem x:Name="转到定义菜单" Header="转到定义(_D)" Click="转到定义_Click" InputGestureText="F12"
+                              ToolTip="跳到光标下那个名字的定义处(跨文件);内建函数 / 宿主能力 / 关键字这类没有源码定义的会说清是哪一类,不会没反应"/>
+                    <MenuItem x:Name="查找引用菜单" Header="查找引用(_R)" Click="查找引用_Click" InputGestureText="Shift+F12"
+                              ToolTip="列出谁用了这个名字:函数看调用边表(语义);变量按文本整词找(清单写进输出框,并跳到第一处)"/>
+                </MenuItem>
+                <MenuItem Header="运行(_R)" Style="{StaticResource SubMenuItemStyle}">
+                    <MenuItem x:Name="汇编菜单" Header="编译(启动项目)(_A)" Click="汇编按钮_Click" ToolTip="按工程文件编译启动项目"/>
+                    <MenuItem x:Name="参与编译菜单" Header="汇编源码参与编译(_H)" IsCheckable="True" Click="汇编源码参与编译_Click"
+                              ToolTip="当前这一页是汇编源码(.hba)时可用:勾上把它写进工程文件的 `汇编` 表 —— 下次编译接在源码展开结果之后一起汇编(标签与源码全局共用);取消勾选就拿掉。默认不参与编译,所以不勾时编译产物与没有它时逐字节一致。"/>
+                    <MenuItem x:Name="执行菜单" Header="执行(_E)" Click="执行按钮_Click" InputGestureText="F5"
+                              ToolTip="F5 = 编译 + 执行:改过没保存的先自动存盘;源码变了自动重新编译、从头跑;没变又停在断点上就接着跑"/>
+                    <MenuItem x:Name="允许弹窗菜单" Header="允许弹窗(_W)" IsCheckable="True" IsChecked="False" Click="允许弹窗_Click"
+                              ToolTip="H92-1:程序里的提示框 / 选文件 / 另存为要不要真的弹在桌面上。默认**不勾** —— 那几条一律给「这个宿主不弹窗」,程序照常跑完,与命令行 / 自检 / 独立 exe 同一个口径(所以 `示例59_剪贴板与弹窗` 的输出断言两条腿对得上)。勾上就真弹,那时人得守着把它们点掉,程序才走得下去。勾选状态记在 `选项.json` 里,下次打开还在"/>
+                    <MenuItem x:Name="控制台窗口跑菜单" Header="在控制台窗口里跑(_K)" Click="控制台窗口跑_Click" InputGestureText="Ctrl+F5" ToolTip="编译(没编就编)→ 把刚生成的独立程序在它自己的控制台窗口里跑起来:输入输出都在那个窗口里,退出码回写到「输出」页。适合看控制台程序(表格 / 进度条 / 读输入)的真效果;那个独立程序是控制台程序,跑完会等你按任意键。工具栏『打包:』选『只编译』时不产独立程序,会在「编译」页如实提示"/>
+                    <MenuItem x:Name="热重载菜单" Header="热重载(_R)" Click="热重载菜单_Click" InputGestureText="F6"
+                              ToolTip="H13:F6 = 改源码不重启程序就换机器码 —— 编译成功且程序**已经停下**时,把新机器码换进这台虚拟机,上一轮还在的顶层变量接着用(堆里的对象、调用栈、寄存器一律不带过来,重载后从程序开头重跑);程序还在跑就先把它停下,再按一次 F6 换。保不住什么会如实写在「输出」页"/>
+                    <Separator/>
+                    <MenuItem x:Name="单步调试菜单" Header="单步调试(_D)" Click="打开调试器按钮_Click"
+                              ToolTip="打开调试观察窗(变量表 / 寄存器表 / 指令 / 内存;跟着主题换色)"/>
+                    <MenuItem Header="中英切换(_L)" Click="中英切换_Click"/>
+                    <Separator/>
+                    <MenuItem x:Name="自检窗菜单" Header="自检窗格(_S)…" Click="菜单自检窗_Click"
+                              ToolTip="开着窗跑一遍全套自检:一条条往外冒,绿 = 通过 / 红 = 失败 / 灰 = 跳过;能只看失败、能复制、双击看详情。跑在后台,界面不冻"/>
+                    <Separator/>
+                    <MenuItem Header="综合自检(_Z)" Click="综合自检_Click" ToolTip="运行全指令+中间层+边界自检,结果写输出框,异常写异常框"/>
+                </MenuItem>
+                <MenuItem Header="调试(_D)" Style="{StaticResource SubMenuItemStyle}">
+                    <MenuItem x:Name="调试逐步菜单" Header="逐步(_Z)" Click="调试_逐步菜单_Click"
+                              ToolTip="一次走一条**源码行**:编译器生成的指令(序言 / 收尾)一口气跑过,黄条落在这一行上(编辑器不换文档、不展开),底部显示指令 / 寄存器 / 内存;第一次按会自动编译并进入单步。想看展开的汇编用工具栏「展开到汇编」开新页"/>
+                    <MenuItem x:Name="调试继续菜单" Header="继续(_J)" Click="调试_继续按钮_Click"
+                              ToolTip="往下跑:有断点就停在断点上,没有就跑到停机"/>
+                    <MenuItem x:Name="调试停止菜单" Header="停止(_T)" Click="调试_停止按钮_Click" InputGestureText="Shift+F5" IsEnabled="False"
+                              ToolTip="把正在跑的程序叫停(死循环也不用杀进程):每 4096 条指令查一次请求,程序**停在原地**(寄存器 / 变量都还看得见),输出页写一行「已停止」;这一次不做断言,再按「执行」从头跑"/>
+                    <MenuItem x:Name="调试复位菜单" Header="复位(_F)" Click="调试_复位按钮_Click"
+                              ToolTip="回到程序开头(同时退出单步)"/>
+                    <Separator/>
+                    <MenuItem x:Name="切换断点菜单" Header="切换断点(_B)" Click="菜单切换断点_Click" InputGestureText="F9"
+                              ToolTip="在光标那一行加/去一个断点(也可以点行号左边的空白处);断点跟着工程走,存在项目目录的 断点.hbd"/>
+                    <MenuItem Header="断点条件(_C)…" Click="断点条件_Click"
+                              ToolTip="给光标那一行**已经下好**的断点写一个命中条件(如 i == 5):条件为假就当没命中、接着跑;留空 = 每次停"/>
+                    <MenuItem x:Name="加监视菜单" Header="加监视表达式(_W)…" Click="加监视_Click" InputGestureText="Ctrl+Alt+W"
+                              ToolTip="把光标下那个名字(或者编辑器里选中的那一段)加进底部『监视』页:每走一步自动重算它现在是多少;也认 `总数 &gt;= 100`、`左 &lt; 右` 这种写法。写下来会记住,下次打开还在。底部的『监视』页里也能直接加"/>
+                    <MenuItem x:Name="清除断点菜单" Header="清除所有断点(_K)" Click="菜单清除所有断点_Click"
+                              ToolTip="把这个工程里的断点全清掉(编辑器右键菜单里也有同一条)"/>
+                </MenuItem>
+                <MenuItem Header="视图(_V)" Style="{StaticResource SubMenuItemStyle}">
+                    <MenuItem x:Name="命令面板菜单" Header="命令面板(_P)…" Click="命令面板_Click"
+                              ToolTip="一个框里找全部命令:菜单上有的 + 帮助站点的话题 + 最近用过的;中文 / 英文 / 拼音首字母都认,回车执行。默认键见选项页『快捷键』"/>
+                    <Separator/>
+                    <MenuItem x:Name="视图项目树" Header="项目/文件树(_P)" IsCheckable="True" IsChecked="True" Click="视图开关_Click"/>
+                    <Separator/>
+                    <MenuItem x:Name="视图输出" Header="输出(_O)" IsCheckable="True" IsChecked="True" Click="视图开关_Click"/>
+                    <MenuItem x:Name="视图编译" Header="编译(_C)" IsCheckable="True" IsChecked="True" Click="视图开关_Click"/>
+                    <MenuItem x:Name="视图异常" Header="异常(_X)" IsCheckable="True" IsChecked="True" Click="视图开关_Click"/>
+                    <MenuItem x:Name="视图控制台" Header="控制台(_K)" IsCheckable="True" IsChecked="True" Click="视图开关_Click"/>
+                    <MenuItem x:Name="视图问题" Header="问题(_P)" IsCheckable="True" IsChecked="True" Click="视图开关_Click"/>
+                    <MenuItem x:Name="视图变量" Header="变量(_V)" IsCheckable="True" IsChecked="False" Click="视图开关_Click"/>
+                    <MenuItem x:Name="视图调试" Header="调试(_D)" IsCheckable="True" IsChecked="False" Click="视图开关_Click"/>
+                </MenuItem>
+                <MenuItem Header="工具(_U)" Style="{StaticResource SubMenuItemStyle}">
+                    <MenuItem x:Name="反汇编菜单" Header="反汇编当前文件(_D)" Click="菜单反汇编_Click"
+                              ToolTip="把当前标签页的代码编译一遍,再显示反汇编(汇编单步之外看机器码用)"/>
+                    <Separator/>
+                    <!-- 第170批:主题与选项从顶级菜单收进这里(顶级菜单 9 → 7:文件/编辑/运行/调试/视图/工具/帮助)
+                         子项一律走**隐式样式**(AllMenuItemStyle):它有勾选列与 ↓ 那一格箭头,
+                         SubMenuItemStyle 是给顶级菜单用的(没有箭头),别再套到子项上。 -->
+                    <MenuItem Header="主题(_T)" ToolTip="切换界面配色(暗 / 亮 / 黑客帝国 / 赛博朋克;逐项配色在 选项页 里调)">
+                        <MenuItem Header="暗(_D)" Click="菜单主题暗_Click"/>
+                        <MenuItem Header="亮(_L)" Click="菜单主题亮_Click"/>
+                        <Separator/>
+                        <MenuItem Header="黑客帝国(_M)" Click="菜单主题黑客帝国_Click"
+                                  ToolTip="暗绿色终端风:黑底 + 荧光绿,注释掉进背景里"/>
+                        <MenuItem Header="赛博朋克(_C)" Click="菜单主题赛博朋克_Click"
+                                  ToolTip="深紫夜色 + 霓虹青 / 品红 / 橙 / 黄"/>
+                    </MenuItem>
+                    <Separator/>
+                    <MenuItem Header="选项(_O)" Click="菜单选项_Click"
+                              ToolTip="打开选项页(配色 / 输入行为 / 缩进 / 快捷键等设置)"/>
+                </MenuItem>
+                <MenuItem Header="帮助(_H)" Style="{StaticResource SubMenuItemStyle}">
+                    <MenuItem Header="快速上手(_Q)" Click="帮助快速上手_Click"/>
+                    <MenuItem Header="指令速查(_I)" Click="帮助指令速查_Click"/>
+                    <MenuItem Header="中间层速查(_M)" Click="帮助中间层速查_Click"/>
+                    <Separator/>
+                    <MenuItem Header="综合自检(_Z)" Click="综合自检_Click"/>
+                    <Separator/>
+                    <MenuItem Header="关于(_A)" Click="帮助关于_Click"/>
+                </MenuItem>
+            </Menu>
+
+            <!-- 右：自定义窗口控制按钮 -->
+            <StackPanel Grid.Column="2"
+                        Orientation="Horizontal"
+                        HorizontalAlignment="Right"
+                        VerticalAlignment="Stretch"
+                        Margin="0,0,10,0">
+                <!-- 最小化 -->
+                <Button Width="30" Height="30"
+                        Background="Transparent"
+                        BorderThickness="0"
+                        Foreground="White"
+                        FontFamily="Segoe MDL2 Assets"
+                        FontSize="14"
+                        Content="&#xE921;"
+                        Click="最小化按钮_Click"
+                        ToolTip="最小化"
+                        WindowChrome.IsHitTestVisibleInChrome="True" />
+                <!-- 关键：允许在 Chrome 区域交互 -->
+                <!-- 最大化/还原 -->
+                <Button x:Name="最大化还原按钮" Width="30" Height="30"
+                        Background="Transparent"
+                        BorderThickness="0"
+                        Foreground="White"
+                        FontFamily="Segoe MDL2 Assets"
+                        FontSize="14"
+                        Content="&#xE922;"
+                        Click="最大化还原按钮_Click"
+                        ToolTip="最大化"
+                        WindowChrome.IsHitTestVisibleInChrome="True" />
+                <!-- 关闭 -->
+                <Button Width="30" Height="30"
+                        Background="Transparent"
+                        BorderThickness="0"
+                        Foreground="White"
+                        FontFamily="Segoe MDL2 Assets"
+                        FontSize="14"
+                        Content="&#xE8BB;"
+                        Click="关闭按钮_Click"
+                        MouseEnter="关闭按钮_鼠标进入"
+                        MouseLeave="关闭按钮_鼠标离开"
+                        ToolTip="关闭"
+                        WindowChrome.IsHitTestVisibleInChrome="True" />
+            </StackPanel>
+        </Grid>
+
+        <!-- ========== 工具栏（原有内容） ========== -->
+        <Grid Grid.Row="1" Margin="5,0,5,0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="30"/>
+            </Grid.RowDefinitions>
+            <StackPanel Grid.Row="0" Orientation="Horizontal" VerticalAlignment="Center">
+                <!-- 新建项目:Segoe Fluent Icons 的 E8F4(新建文件夹);悬停时图标轻轻放大再回弹 -->
+                <Button FontFamily="Segoe Fluent Icons"
+                        FontSize="20"
+                        Foreground="MediumPurple"
+                        ToolTip="新建项目(建目录 + 工程文件 + 主程序.hb)"
+                        Style="{StaticResource ButtonStyle}"
+                        RenderTransformOrigin="0.5,0.5"
+                        Click="新建项目_Click">
+                    <Grid>
+                        <!-- 底框 -->
+                        <TextBlock Text="&#xe737;"/>
+                        <!-- 绿圈 -->
+                        <TextBlock Text="&#xea3b;"
+                                   Foreground="LawnGreen"
+                                   FontFamily="Segoe Fluent Icons"
+                                   FontSize="10"
+                                   Margin="-4,0,0,0"/>
+                        <!-- 加号 -->
+                        <TextBlock Text="&#xe710;"
+                                   Foreground="White"
+                                   FontFamily="Segoe Fluent Icons"
+                                   FontSize="9"
+                                   Margin="-3.25,0.25,0,0"/>
+                        <TextBlock Text="HB:\"
+                                   Foreground="PaleVioletRed"
+                                   FontFamily="Arial Narrow"
+                                   FontSize="9"
+                                   Margin="2.5,8,0,0"/>
+                    </Grid>
+                </Button>
+                <!-- 新建文件:带一张纸的加号图标(E710 加号 + 纸),纯文字按钮容易和"新建项目"混 -->
+                <Button Name="新建文件按钮"
+                        FontFamily="Segoe Fluent Icons"
+                        FontSize="20"
+                        Foreground="#7BC96F"
+                        ToolTip="在项目目录里新建一个 .hb"
+                        Style="{StaticResource ButtonStyle}"
+                        RenderTransformOrigin="0.5,0.5"
+                        Click="新建文件_Click">
+                    <Grid>
+                        <!-- 底框 -->
+                        <TextBlock Text="&#xe7c3;"/>
+                        <!-- 绿圈 -->
+                        <TextBlock Text="&#xea3b;"
+                                   Foreground="LawnGreen"
+                                   FontFamily="Segoe Fluent Icons"
+                                   FontSize="10"
+                                   Margin="-4,0,0,0"/>
+                        <!-- 加号 -->
+                        <TextBlock Text="&#xe710;"
+                                   Foreground="White"
+                                   FontFamily="Segoe Fluent Icons"
+                                   FontSize="9"
+                                   Margin="-3.25,0.25,0,0"/>
+                    </Grid>
+                </Button>
+
+                <!-- 打开项目:E8B7(文件夹);悬停时轻微左右摆动 -->
+                <Button FontFamily="Segoe Fluent Icons"
+                        FontSize="20"
+                        Foreground="#D9A441"
+                        ToolTip="打开项目(选工程文件 .hbp)"
+                        Style="{StaticResource ButtonStyle}"
+                        RenderTransformOrigin="0.5,0.5"
+                        Click="打开项目_Click">
+                    <Grid>
+                        <!-- 底框 -->
+                        <TextBlock Text="&#xe737;"/>
+                        <TextBlock Text="HB:\"
+                                   Foreground="PaleVioletRed"
+                                   FontFamily="Arial Narrow"
+                                   FontSize="9"
+                                   Margin="2.5,8,0,0"/>
+                        <!-- 绿圈 -->
+                        <TextBlock Text="&#xea3b;"
+                                   Foreground="SkyBlue"
+                                   FontFamily="Segoe Fluent Icons"
+                                   FontSize="10"
+                                   Margin="-4,12,0,0"/>
+                        <!-- 加号 -->
+                        <TextBlock Text="&#xe8ad;"
+                                   Foreground="White"
+                                   FontFamily="Segoe Fluent Icons"
+                                   FontSize="7"
+                                   Margin="-3,13,0,0"/>
+
+                    </Grid>
+                </Button>
+
+                <!-- 打开文件 -->
+                <Button Name="打开文件按钮"
+                        Content="&#xe8e5;"
+                        FontFamily="Segoe Fluent Icons"
+                        FontSize="20"
+                        Foreground="SkyBlue"
+                        ToolTip="打开文件(只查看/编辑;编译执行需要项目)"
+                        Style="{StaticResource ButtonStyle}"
+                        Click="打开文件_Click"/>
+
+                <!-- 保存 -->
+                <Button Name="保存按钮"
+                        Content="&#xE74E;"
+                        FontFamily="Segoe Fluent Icons"
+                        FontSize="20"
+                        Foreground="CornflowerBlue"
+                        ToolTip="保存当前文件"
+                        Style="{StaticResource ButtonStyle}"
+                        Click="保存_Click"
+                        RenderTransformOrigin="0.5,0.5"/>
+
+                <!-- 撤销 -->
+                <Separator Margin="5,0,5,0" Height="15" Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" />
+                <Button Name="撤销按钮"
+                        Content="&#xE7A7;"
+                        FontFamily="Segoe Fluent Icons"
+                        FontSize="20"
+                        Foreground="DarkSeaGreen"
+                        ToolTip="撤销&#x0a;CTRL+z"
+                        Style="{StaticResource ButtonStyle}"
+                        Click="撤销按钮_Click"/>
+
+                <!-- 重做 -->
+                <Button Name="重做按钮"
+                        Content="&#xE7A6;"
+                        FontFamily="Segoe Fluent Icons"
+                        FontSize="20"
+                        Foreground="MediumVioletRed"
+                        ToolTip="重做&#x0a;CTRL+y"
+                        Style="{StaticResource ButtonStyle}"
+                        Click="重做按钮_Click"/>
+
+                <!-- 编译只在菜单里(运行 → 编译);工具栏不再放它 —— 执行会自己先编译 -->
+                <Separator Margin="5,0,5,0" Height="15" Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" />
+                <Button Name="执行按钮"
+                        Content="&#xeea1;"
+                        FontFamily="Segoe Fluent Icons"
+                        FontSize="20"
+                        Foreground="Gold"
+                        ToolTip="F5 编译并执行:源码变了自动重新编译从头跑;没变又停在断点上就接着跑"
+                        Style="{StaticResource ButtonStyle}"
+                        Click="执行按钮_Click"
+                        IsEnabled="False"/>
+                <!-- 生成 .hb 的按钮已移除:每次编译都会自动生成独立 exe(见 编译启动项目_Click),
+                     而 .hb(头 + 机器码)没有别的消费方 —— HB宿主 只运行贴过尾巴(带机器码)的独立 exe。
+                     注意**只剩单向残留**:按钮没了,但「文件 → 打开」仍然认 `.hb`(头两个字节 "HB" 就当二进制程序
+                     直接喂虚拟机跑,见 `MainWindow.窗口与文件.cs` 的 `文件头[0] == 0x48 && 文件头[1] == 0x42`
+                     那一支)—— 这是有意留的"直接跑一个 .hb",不是死代码。 -->
+
+                <!-- H22 停止:程序在后台线程上跑,界面不冻,这一个按钮把长循环叫停(默认键 Shift+F5)。
+                     没在跑的时候它是灰的(可用性由 `刷新命令可用性()` 一处管) -->
+                <Button Name="停止按钮"
+                        Content="&#xE71A;"
+                        FontFamily="Segoe Fluent Icons"
+                        FontSize="18"
+                        Foreground="IndianRed"
+                        ToolTip="Shift+F5 停止:把正在跑的程序叫停(HB 程序死循环时不用再杀进程)&#x0a;程序停在原地 —— 寄存器 / 变量 / 输出都留着,这一次不做断言;再按 F5 从头跑"
+                        Style="{StaticResource ButtonStyle}"
+                        Click="调试_停止按钮_Click"
+                        IsEnabled="False"/>
+
+                <!-- 中英文切换 -->
+                <Separator Margin="5,0,5,0" Height="15" Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" />
+                <Button Name="中英切换"
+                        Content="&#xe8c1;"
+                        FontFamily="Segoe Fluent Icons"
+                        Foreground="MediumSlateBlue"
+                        FontSize="20"
+                        ToolTip="切换到英文"
+                        Style="{StaticResource ButtonStyle}"
+                        Click="中英切换_Click"/>
+
+                <!-- R3-6-4 批 4:打包方式下拉,决定"编译一次目录里出来的那个程序打成什么"。
+                     三档来自唯一事实源 引擎\打包规格C.cs(与 hbcc 那个打包开关是同一个词;
+                     第248批 H41 撤掉了「轻量·需装 .NET」那一档 —— 它贴的其实是那份 101 MB 自包含宿主,
+                     文案却说"一百多 KB、要装 .NET",而"产物小"已经由「原生 C」更彻底地解决):
+                       原生 C            转 C 源码再交本机 C 编译器:几十~几百 KB、不带 .NET(最快最小)
+                       自带运行时·单文件  拷自包含 HB 宿主 + 贴机器码:几十 MB、目标机器什么都不用装
+                       只编译            不产 exe:交一份 C 源码 / 一份 .hb(自己拿去编 / 自己贴)
+                     选完立刻按新档重做一次打包(机器码没变,变的是"打包那一步")。上次选的记在
+                     程序目录的 打包方式.json 里(本机偏好,不进 .hbp)。 -->
+                <TextBlock Text="打包:"
+                           VerticalAlignment="Center"
+                           Margin="6,0,2,0"
+                           Foreground="#FF556677"
+                           FontSize="11"/>
+                <ComboBox Name="打包方式下拉"
+                          Width="148"
+                          Height="22"
+                          VerticalAlignment="Center"
+                          FontSize="11"
+                          ToolTip="编译产物打成什么(三档与 `hbcc --打包` 完全对应)&#x0a;原生 C:几十~几百 KB、不带 .NET,要本机有 C 编译器&#x0a;自带运行时·单文件:几十 MB,目标机器什么都不用装&#x0a;只编译:不产 exe,交一份 C 源码 / 一份 .hb"
+                          SelectionChanged="打包方式下拉_SelectionChanged">
+                    <ComboBoxItem Content="原生 C"/>
+                    <ComboBoxItem Content="自带运行时·单文件"/>
+                    <ComboBoxItem Content="只编译"/>
+                </ComboBox>
+
+                <!-- 展开到汇编:把当前文件整篇展开,在**新页**里打开(可编辑、可保存;落点 `<文件>_ASM.hba`。——
+                     C23:以前它是"只读整篇视图"的开关;那个只读路整个撤了(单步也不再展开编辑器) -->
+                <Button Name="展开到汇编按钮" Style="{StaticResource ButtonStyle}"
+                        Click="展开到汇编_Click"
+                        ToolTip="把**当前文件**整篇展开成汇编,在新标签页里打开(可编辑、可保存;存成「被展开文件名 + _ASM.hba」)。&#x0a;展开文本带 `// 来自第 N 行` 标记,能对回源码行;默认不参与编译 —— 想拿它优化热路径,在「运行 → 汇编源码参与编译」里勾上。">
+                    <Grid>
+                        <TextBlock Text="&#xe943;"
+                                   FontFamily="Segoe Fluent Icons"
+                                   Foreground="SteelBlue"
+                                   FontSize="16"
+                                   Margin="0,3,0,0"/>
+                        <TextBlock Text="&lt;/&gt;"
+                                   FontFamily="Consolas"
+                                   Foreground="SlateBlue"
+                                   FontSize="8"
+                                   Margin="0,14,0,0"/>
+                    </Grid>
+                </Button>
+
+
+            </StackPanel>
+        </Grid>
+
+        <!-- ========== 主内容（左:解决方案资源管理器 / 中:编辑器 + 输出区） ========== -->
+        <Grid Grid.Row="2" Margin="5,0,5,5">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition x:Name="项目树列" Width="240" MinWidth="160"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- 解决方案资源管理器:项目(粗体=启动项目) → 文件 -->
+            <Border Grid.Column="0" BorderThickness="0" CornerRadius="6"
+                    Background="{DynamicResource 主题面板刷}">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <!-- 标题条:新建/打开在顶部菜单与工具栏(只有一套),这里只当标题 -->
+                    <Border Grid.Row="0" Background="{DynamicResource 主题内容刷}" Padding="10,7" CornerRadius="6,6,0,0">
+                        <TextBlock Text="解决方案资源管理器" FontWeight="SemiBold" FontSize="12" Opacity="0.85"/>
+                    </Border>
+
+                    <TreeView Grid.Row="1" Name="项目树"
+                              Background="Transparent" BorderThickness="0"
+                              Padding="4,6"
+                              Foreground="{DynamicResource 主题前景刷}"
+                              MouseDoubleClick="项目树_MouseDoubleClick"
+                              PreviewMouseRightButtonDown="项目树_预览右键">
+                        <TreeView.ContextMenu>
+                            <ContextMenu>
+                                <MenuItem x:Name="菜单设为启动项目" Header="设为启动项目" Click="设为启动项目_Click"/>
+                                <!-- 第193批:资源管理器右键这条「编译」与菜单那条走**同一条编译路**,
+                                     只差一格 —— **不自动打开 `<启动文件>_ASM.hba`**(用户要求与 F5 一个口径)。 -->
+                                <MenuItem x:Name="菜单项目编译" Header="编译(启动项目)" Click="编译启动项目_不开汇编源码页_Click"
+                                          ToolTip="按工程文件编译启动项目(与 F5 同一条路:不自动打开 &quot;被编译文件_ASM.hba&quot;;想看展开的汇编用 运行 → 编译,或工具栏「展开到汇编」)"/>
+                                <Separator/>
+                                <!-- H33:思维导图(用户 2026-09-25 拍板)。右键点在哪个节点上,就从哪个节点起。 -->
+                                <MenuItem Header="打开思维导图(_T)" Click="打开思维导图_Click"
+                                          ToolTip="把这一项一层一层点开:工程 → 文件 → 结构 / 方法 → 这个方法又调用了谁…(浮动窗靠右侧生成;已经长出来的不会被清掉;一层超过 20 个时先出 20 个 + 一条「…」)"/>
+                                <MenuItem Header="新建项目…" Click="新建项目_Click"
+                                          ToolTip="建 项目目录 + 工程文件(.hbp) + 主程序.hb,建好直接打开主程序.hb"/>
+                                <MenuItem Header="新建文件…" Click="新建文件_Click"
+                                          ToolTip="在项目目录里新建一个 .hb,并登记进工程文件的文件表;没有项目时不可用"/>
+                                <MenuItem Header="添加文件…" Click="添加文件_Click"
+                                          ToolTip="把磁盘上已有的文件加进当前工程(可多选);只登记、不复制、不移动:工程目录里按相对路径,工程目录外按绝对路径。按后缀进对应的表:.hb 进「文件」、.hba 进「汇编」(C22)、别的进「资源」"/>
+                                <Separator/>
+                                <MenuItem Header="添加项目…" Click="添加项目_Click"
+                                          ToolTip="把另一个项目加进当前方案(能和现在的项目并存)"/>
+                                <MenuItem Header="刷新" Click="刷新项目_Click"/>
+                                <Separator/>
+                                <MenuItem Header="移除项目" Click="移除项目_Click"/>
+                            </ContextMenu>
+                        </TreeView.ContextMenu>
+
+                        <TreeView.Resources>
+                            <!-- ========== 文件模板 ========== -->
+                            <!-- DataType 隐式匹配 local:文件项C,自动生效 -->
+                            <DataTemplate DataType="{x:Type local:文件项C}">
+                                <StackPanel Orientation="Horizontal">
+                                    <!-- 图标区域:两层叠放 -->
+                                    <Grid Width="14" Height="14" Margin="0,0,6,0" VerticalAlignment="Center">
+                                        <!-- 下层:文件图标 -->
+                                        <TextBlock FontFamily="Segoe Fluent Icons" FontSize="12"
+                                                   HorizontalAlignment="Center" VerticalAlignment="Center"
+                                                   Foreground="#6FA8DC">
+                                            <TextBlock.Style>
+                                                <Style TargetType="TextBlock">
+                                                    <Setter Property="Text" Value="&#xE8A5;"/>
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding 是资源}" Value="True">
+                                                            <Setter Property="Foreground" Value="#D9A441"/>
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </TextBlock.Style>
+                                        </TextBlock>
+                                        <!-- 上层:hb 字母 -->
+                                        <TextBlock Text="hb" FontSize="8" FontWeight="Bold"
+                                                   HorizontalAlignment="Center" VerticalAlignment="Center"
+                                                   Margin="-6,4,0,0"
+                                                   Foreground="Red"/>
+                                    </Grid>
+                                    <TextBlock Text="{Binding 显示名}" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </DataTemplate>
+
+                            <!-- ========== 项目模板 ========== -->
+                            <!-- DataType 隐式匹配 local:项目项C;ItemsSource 决定子项来源 -->
+                            <HierarchicalDataTemplate DataType="{x:Type local:项目项C}" ItemsSource="{Binding 文件}">
+                                <StackPanel Orientation="Horizontal">
+                                    <!-- 图标区域:两层叠放 -->
+                                    <Grid Width="14" Height="14" Margin="0,0,6,0" VerticalAlignment="Center">
+                                        <!-- 下层:文件夹图标 -->
+                                        <TextBlock Text="{Binding 图标}" FontFamily="Segoe Fluent Icons" FontSize="13"
+                                                   HorizontalAlignment="Center" VerticalAlignment="Center"
+                                                   Foreground="#D9A441"/>
+                                        <!-- 上层:hb 字母 -->
+                                        <TextBlock Text="hb" FontSize="8" FontWeight="Bold"
+                                                   HorizontalAlignment="Center" VerticalAlignment="Center"
+                                                   Margin="0,3,0,0"
+                                                   Foreground="Red"/>
+                                    </Grid>
+                                    <TextBlock Text="{Binding 名称}" VerticalAlignment="Center">
+                                        <TextBlock.Style>
+                                            <Style TargetType="TextBlock">
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding 是否启动项目}" Value="True">
+                                                        <Setter Property="FontWeight" Value="Bold"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </TextBlock.Style>
+                                    </TextBlock>
+                                </StackPanel>
+                            </HierarchicalDataTemplate>
+
+                            <!-- ========== 展开/折叠三角 ========== -->
+                            <Style TargetType="ToggleButton" x:Key="树展开箭头样式">
+                                <Setter Property="Width" Value="16"/>
+                                <Setter Property="Height" Value="16"/>
+                                <Setter Property="Focusable" Value="False"/>
+                                <Setter Property="Template">
+                                    <Setter.Value>
+                                        <ControlTemplate TargetType="ToggleButton">
+                                            <Border Background="Transparent" Padding="3">
+                                                <Path x:Name="箭头" Data="M 0,0 L 4,4 L 0,8"
+                                                      Stroke="{DynamicResource 主题前景刷}" StrokeThickness="1.4"
+                                                      StrokeStartLineCap="Round" StrokeEndLineCap="Round"
+                                                      RenderTransformOrigin="0.5,0.5"/>
+                                            </Border>
+                                            <ControlTemplate.Triggers>
+                                                <Trigger Property="IsChecked" Value="True">
+                                                    <Setter TargetName="箭头" Property="RenderTransform">
+                                                        <Setter.Value>
+                                                            <RotateTransform Angle="90"/>
+                                                        </Setter.Value>
+                                                    </Setter>
+                                                </Trigger>
+                                            </ControlTemplate.Triggers>
+                                        </ControlTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                            </Style>
+
+                            <!-- ========== TreeViewItem 样式 ========== -->
+                            <Style TargetType="TreeViewItem">
+                                <Setter Property="Foreground" Value="{DynamicResource 主题前景刷}"/>
+                                <Setter Property="Padding" Value="2,1"/>
+                                <Setter Property="Margin" Value="0,1,0,0"/>
+                                <Setter Property="Template">
+                                    <Setter.Value>
+                                        <ControlTemplate TargetType="TreeViewItem">
+                                            <StackPanel>
+                                                <Border x:Name="行底" CornerRadius="4" Padding="4,3"
+                                                        Background="Transparent">
+                                                    <Grid>
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition Width="Auto"/>
+                                                            <ColumnDefinition Width="*"/>
+                                                        </Grid.ColumnDefinitions>
+                                                        <ToggleButton x:Name="展开箭头" Grid.Column="0"
+                                                                      Style="{StaticResource 树展开箭头样式}"
+                                                                      IsChecked="{Binding IsExpanded, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}"/>
+                                                        <ContentPresenter Grid.Column="1" ContentSource="Header"
+                                                                          VerticalAlignment="Center" Margin="2,0,0,0"/>
+                                                    </Grid>
+                                                </Border>
+                                                <ItemsPresenter x:Name="子项" Margin="14,0,0,0"/>
+                                            </StackPanel>
+                                            <ControlTemplate.Triggers>
+                                                <Trigger Property="HasItems" Value="False">
+                                                    <Setter TargetName="展开箭头" Property="Visibility" Value="Collapsed"/>
+                                                </Trigger>
+                                                <Trigger Property="IsExpanded" Value="False">
+                                                    <Setter TargetName="子项" Property="Visibility" Value="Collapsed"/>
+                                                </Trigger>
+                                                <Trigger Property="IsSelected" Value="True">
+                                                    <Setter TargetName="行底" Property="Background" Value="{DynamicResource 主题强调刷}"/>
+                                                    <Setter Property="Foreground" Value="{DynamicResource 主题菜单字刷}"/>
+                                                </Trigger>
+                                                <MultiTrigger>
+                                                    <MultiTrigger.Conditions>
+                                                        <Condition Property="IsMouseOver" Value="True"/>
+                                                        <Condition Property="IsSelected" Value="False"/>
+                                                    </MultiTrigger.Conditions>
+                                                    <Setter TargetName="行底" Property="Background" Value="#20808080"/>
+                                                </MultiTrigger>
+                                            </ControlTemplate.Triggers>
+                                        </ControlTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                            </Style>
+                        </TreeView.Resources>
+
+                        <!-- 注意:这里不再有 <TreeView.ItemTemplate>,模板全部在 Resources 里按 DataType 隐式匹配 -->
+                    </TreeView>
+                </Grid>
+            </Border>
+
+            <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Center"
+                          VerticalAlignment="Stretch" Background="Transparent"
+                          ResizeBehavior="BasedOnAlignment" ResizeDirection="Columns"/>
+
+            <Grid Grid.Column="2" MinWidth="200">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="3*" MinHeight="120"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="1*" MinHeight="80" x:Name="底部行"/>
+                </Grid.RowDefinitions>
+
+                <!-- 上:编辑器 -->
+                <Grid Grid.Row="0">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <!-- 编辑器区那一格是**固定分区标题**(写死"源代码 (支持中文指令)"),当前文件名在页头(标签页)上;
+                         H30:它原先挂过一个"显示当前文件名"式的名字,可全仓没有一处代码更新它,那个名字已撤 -->                    <TextBlock Grid.Row="0"
+                               Text="源代码 (支持中文指令)"
+                               FontWeight="Bold"
+                               Foreground="{DynamicResource 主题前景刷}" Margin="0,0,0,5"/>
+
+                    <!-- TabControl 核心绑定 -->
+                    <TabControl Grid.Row="1" Name="代码选卡"
+                                ItemsSource="{Binding 选卡页视图模型表}"
+                                SelectedItem="{Binding 选中页, Mode=TwoWay}"
+                                SelectionChanged="代码选卡_SelectionChanged"
+                                ItemContainerStyle="{StaticResource 标签头样式}"
+                                ItemTemplateSelector="{StaticResource 头选择}"
+                                ContentTemplateSelector="{StaticResource 内容选择}"
+                                Background="{DynamicResource 主题内容刷}"
+                                Foreground="{DynamicResource 主题前景刷}"
+                                BorderThickness="0">
+                    </TabControl>
+                </Grid>
+
+                <GridSplitter Grid.Row="1" Height="5" HorizontalAlignment="Stretch"
+                              VerticalAlignment="Center" Background="Transparent"
+                              ResizeBehavior="BasedOnAlignment" ResizeDirection="Rows"/>
+
+                <!-- 下:输出(程序/测试输出) / 编译(编译信息) / 异常 / 变量 / 调试 -->
+                <TabControl Grid.Row="2" x:Name="底部选卡" Background="Transparent" BorderThickness="0"
+                            ItemContainerStyle="{StaticResource 页内标签头}">
+                    <TabControl.Resources>
+                        <!-- 底部这几页一直是浅底,所以表头/表格行的颜色写死成浅色一套(免得深色主题下白字白底看不见) -->
+                        <Style TargetType="GridViewColumnHeader">
+                            <Setter Property="Background" Value="#FFEAEAEA"/>
+                            <Setter Property="Foreground" Value="#FF1E1E1E"/>
+                            <Setter Property="BorderBrush" Value="#FFCFCFCF"/>
+                            <Setter Property="BorderThickness" Value="0,0,1,1"/>
+                            <Setter Property="Padding" Value="4,2,4,2"/>
+                        </Style>
+                        <Style TargetType="ListViewItem">
+                            <Setter Property="Foreground" Value="#FF1E1E1E"/>
+                            <Setter Property="Background" Value="Transparent"/>
+                            <Setter Property="Padding" Value="2,1,2,1"/>
+                        </Style>
+                        <!-- 这一格是给底部那几块**纯标签字**用的(输入 ▶ / 表达式: / 监视说明 / 指令 / 内存 / 寄存器):
+                             它们站在浅底上,而窗口那一层前景**跟着主题走**(暗底主题下是浅色)⇒ 不钉住就成"浅字压浅底"。
+                             同一档的表格/输入框早就各自钉了 `#FF1E1E1E`,这一格只是把"纯标签"补齐到同一个数。 -->
+                        <SolidColorBrush x:Key="主题浅底字刷" Color="#FF1E1E1E"/>
+                    </TabControl.Resources>
+                    <TabItem x:Name="输出页" Header="输出">
+                        <TextBox x:Name="输出框"
+                                 VerticalScrollBarVisibility="Auto"
+                                 FontFamily="Consolas"
+                                 AcceptsReturn="True"
+                                 FontSize="13"
+                                 IsReadOnly="False"
+                                 TextWrapping="Wrap"
+                                 Background="#F5F5F5"
+                                 KeyDown="输出框_KeyDown"
+                                 TextChanged="输出框_TextChanged"/>
+                    </TabItem>
+                    <TabItem x:Name="编译页" Header="编译">
+                        <TextBox x:Name="编译框"
+                                 VerticalScrollBarVisibility="Auto"
+                                 FontFamily="Consolas"
+                                 AcceptsReturn="True"
+                                 FontSize="13"
+                                 IsReadOnly="True"
+                                 TextWrapping="Wrap"
+                                 Background="#F5F5F5"/>
+                    </TabItem>
+                    <TabItem x:Name="异常页" Header="异常">
+                        <TextBox x:Name="异常框"
+                                 VerticalScrollBarVisibility="Auto"
+                                 FontFamily="Consolas"
+                                 AcceptsReturn="True"
+                                 FontSize="13"
+                                 IsReadOnly="True"
+                                 TextWrapping="Wrap"
+                                 Background="#F5F5F5"
+                                 Foreground="#C00000"/>
+                    </TabItem>
+
+                    <!-- 问题页:编辑器里检查出来的问题都列在这儿(双击跳到那一行) -->
+                    <TabItem x:Name="问题页" Header="问题">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+                            <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="2,0,0,3">
+                                <CheckBox x:Name="看错误" Content="错误" IsChecked="True" Margin="0,0,12,0" Click="问题筛选_Changed"/>
+                                <CheckBox x:Name="看警告" Content="警告" IsChecked="True" Margin="0,0,12,0" Click="问题筛选_Changed"/>
+                                <CheckBox x:Name="看提示" Content="提示" IsChecked="True" Margin="0,0,12,0" Click="问题筛选_Changed"/>
+                                <TextBlock x:Name="问题摘要" VerticalAlignment="Center" Margin="8,0,0,0" FontSize="12"/>
+                            </StackPanel>
+                            <ListView x:Name="问题表" Grid.Row="1" FontFamily="Consolas" FontSize="13"
+                                      Background="#F5F5F5" BorderThickness="0"
+                                      SelectionMode="Extended"
+                                      KeyDown="问题表_KeyDown"
+                                      ContextMenuOpening="问题表_右键"
+                                      MouseDoubleClick="问题表_MouseDoubleClick">
+                                <ListView.ContextMenu>
+                                    <ContextMenu>
+                                        <!-- P38:一键修复(十条最常见的)。有没有方案由 `问题表_右键` 现算并开关 -->
+                                        <MenuItem x:Name="菜单修这一条" Header="修这一条" Click="问题表_一键修复_Click"
+                                                  ToolTip="把这一条问题直接改掉(先给改动预览,确认后才落到编辑器;不自动存盘,可以 Ctrl+Z 撤回)"/>
+                                        <Separator/>
+                                        <MenuItem Header="复制" Click="问题表_复制_Click"/>
+                                        <MenuItem Header="复制全部" Click="问题表_复制全部_Click"/>
+                                    </ContextMenu>
+                                </ListView.ContextMenu>
+                                <ListView.View>
+                                    <GridView>
+                                        <GridViewColumn Header="级别" Width="60"  DisplayMemberBinding="{Binding 级别}"/>
+                                        <GridViewColumn Header="文件" Width="170" DisplayMemberBinding="{Binding 文件}"/>
+                                        <GridViewColumn Header="行"   Width="50"  DisplayMemberBinding="{Binding 行}"/>
+                                        <GridViewColumn Header="说明" Width="620" DisplayMemberBinding="{Binding 文本}"/>
+                                    </GridView>
+                                </ListView.View>
+                            </ListView>
+                        </Grid>
+                    </TabItem>
+
+                    <!-- 控制台页:程序输出 + 你敲给它的输入(程序在等输入时,在这儿敲一行、回车送进去) -->
+                    <TabItem x:Name="控制台页" Header="控制台">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            <TextBox x:Name="控制台输出框"
+                                     Grid.Row="0"
+                                     VerticalScrollBarVisibility="Auto"
+                                     FontFamily="Consolas"
+                                     AcceptsReturn="True"
+                                     FontSize="13"
+                                     IsReadOnly="True"
+                                     TextWrapping="Wrap"
+                                     Foreground="{StaticResource 主题浅底字刷}"
+                                     Background="#F5F5F5"/>
+                            <Grid Grid.Row="1" Margin="0,3,0,0">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="0" Text="输入 ▶" Foreground="{StaticResource 主题浅底字刷}" VerticalAlignment="Center" Margin="0,0,6,0" FontSize="13"/>
+                                <TextBox x:Name="控制台输入框" Grid.Column="1" FontFamily="Consolas" FontSize="13"
+                                         Foreground="{StaticResource 主题浅底字刷}"
+                                         KeyDown="控制台输入框_KeyDown" Background="#FFFFFF"/>
+                                <Button Grid.Column="2" Content="发送" Margin="6,0,0,0"
+                                        Padding="10,2" Click="控制台发送_Click" ToolTip="把这一行送给正在等输入的程序(等于敲回车)"/>
+                            </Grid>
+                        </Grid>
+                    </TabItem>
+
+                    <!-- 监视页(P35):把"我要盯的表达式"写下来,每走一步自动重算(只在调试时出现) -->
+                    <TabItem x:Name="监视页" Header="监视" Visibility="Collapsed">
+                        <DockPanel>
+                            <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="2,0,2,4">
+                                <TextBlock Text="表达式:" Foreground="{StaticResource 主题浅底字刷}" VerticalAlignment="Center" FontSize="12" Margin="0,0,6,0"/>
+                                <TextBox x:Name="监视输入框" Width="240" Height="24" VerticalContentAlignment="Center"
+                                         FontFamily="Consolas" FontSize="12"
+                                         Foreground="{StaticResource 主题浅底字刷}" Background="#FFFFFF"
+                                         ToolTip="写一个变量名(可带 .字段),或者 `变量 运算符 变量或常量`(如 `i == 5`、`左 &lt; 右`);回车就加上去"
+                                         KeyDown="监视输入框_KeyDown"/>
+                                <Button Content="添加" Height="24" Padding="10,0" Margin="6,0,0,0" Click="监视添加_Click"/>
+                                <Button Content="去这一条" Height="24" Padding="10,0" Margin="6,0,0,0" Click="监视删除_Click"
+                                        ToolTip="把列表里选中的那一条去掉"/>
+                                <Button Content="全清" Height="24" Padding="10,0" Margin="6,0,0,0" Click="监视清空_Click"/>
+                                <TextBlock x:Name="监视说明" Foreground="{StaticResource 主题浅底字刷}" VerticalAlignment="Center" FontSize="12" Opacity="0.7"
+                                           Margin="12,0,0,0" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis"
+                                           Text="没写监视时,这里会提示怎么用"/>
+                            </StackPanel>
+                            <ListView x:Name="监视列表" FontFamily="Consolas" FontSize="13"
+                                      Foreground="#FF1E1E1E"
+                                      Background="#F5F5F5" BorderThickness="0"
+                                      MouseDoubleClick="监视表_MouseDoubleClick"
+                                      ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                                <ListView.View>
+                                    <GridView>
+                                        <GridViewColumn Header="表达式" Width="200" DisplayMemberBinding="{Binding 表达式}"/>
+                                        <GridViewColumn Header="值" Width="200" DisplayMemberBinding="{Binding 值}"/>
+                                        <GridViewColumn Header="类型" Width="110" DisplayMemberBinding="{Binding 类型}"/>
+                                        <GridViewColumn Header="变化(最近几次)" Width="330" DisplayMemberBinding="{Binding 历史}"/>
+                                        <GridViewColumn Header="说明" Width="330" DisplayMemberBinding="{Binding 说明}"/>
+                                    </GridView>
+                                </ListView.View>
+                            </ListView>
+                        </DockPanel>
+                    </TabItem>
+
+                    <!-- 变量页:只在"单步 / 停在断点上"时出现(平时收起,不占地方) -->
+                    <TabItem x:Name="变量页" Header="变量" Visibility="Collapsed">
+                        <ListView x:Name="变量表" FontFamily="Consolas" FontSize="13"
+                                  Foreground="#FF1E1E1E"
+                                  Background="#F5F5F5" BorderThickness="0"
+                                  ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                            <ListView.View>
+                                <GridView>
+                                    <GridViewColumn Header="名字" Width="170" DisplayMemberBinding="{Binding 名字}"/>
+                                    <GridViewColumn Header="值" Width="180" DisplayMemberBinding="{Binding 值}"/>
+                                    <GridViewColumn Header="类型" Width="90" DisplayMemberBinding="{Binding 类型}"/>
+                                    <GridViewColumn Header="在哪" Width="180" DisplayMemberBinding="{Binding 在哪}"/>
+                                    <GridViewColumn Header="寄存器" Width="90" DisplayMemberBinding="{Binding 寄存器槽}"/>
+                                </GridView>
+                            </ListView.View>
+                        </ListView>
+                    </TabItem>
+
+                    <!-- 调试页:指令 / 内存 / 寄存器 并排,各自带自己的滚动条 -->
+                    <TabItem x:Name="调试页" Header="调试" Visibility="Collapsed">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="3*" MinWidth="180"/>
+                                <ColumnDefinition Width="4"/>
+                                <ColumnDefinition Width="3*" MinWidth="180"/>
+                                <ColumnDefinition Width="4"/>
+                                <ColumnDefinition Width="3*" MinWidth="200"/>
+                            </Grid.ColumnDefinitions>
+                            <DockPanel Grid.Column="0">
+                                <TextBlock x:Name="指令标题" DockPanel.Dock="Top" Text="指令" Foreground="{StaticResource 主题浅底字刷}" FontSize="12" Margin="2,0,0,2"/>
+                                <TextBox x:Name="指令框" FontFamily="Consolas" FontSize="12" IsReadOnly="True"
+                                         Foreground="#FF1E1E1E"
+                                         AcceptsReturn="True" Background="#F5F5F5" BorderThickness="0"
+                                         VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto"/>
+                            </DockPanel>
+                            <GridSplitter Grid.Column="1" Width="4" HorizontalAlignment="Stretch" Background="Transparent"/>
+                            <DockPanel Grid.Column="2">
+                                <TextBlock DockPanel.Dock="Top" Text="内存" Foreground="{StaticResource 主题浅底字刷}" FontSize="12" Margin="2,0,0,2"/>
+                                <TextBox x:Name="内存框" FontFamily="Consolas" FontSize="12" IsReadOnly="True"
+                                         Foreground="#FF1E1E1E"
+                                         AcceptsReturn="True" Background="#F5F5F5" BorderThickness="0"
+                                         VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto"/>
+                            </DockPanel>
+                            <GridSplitter Grid.Column="3" Width="4" HorizontalAlignment="Stretch" Background="Transparent"/>
+                            <DockPanel Grid.Column="4">
+                                <TextBlock DockPanel.Dock="Top" Text="寄存器" Foreground="{StaticResource 主题浅底字刷}" FontSize="12" Margin="2,0,0,2"/>
+                                <ListView x:Name="寄存器表" FontFamily="Consolas" FontSize="12"
+                                          Foreground="#FF1E1E1E"
+                                          Background="#F5F5F5" BorderThickness="0"
+                                          ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                                    <ListView.View>
+                                        <GridView>
+                                            <GridViewColumn Header="寄存器" Width="70" DisplayMemberBinding="{Binding 寄存器}"/>
+                                            <GridViewColumn Header="值" Width="130" DisplayMemberBinding="{Binding 值}"/>
+                                            <GridViewColumn Header="谁的" Width="170" DisplayMemberBinding="{Binding 谁的}"/>
+                                        </GridView>
+                                    </ListView.View>
+                                </ListView>
+                            </DockPanel>
+                        </Grid>
+                    </TabItem>
+                </TabControl>
+            </Grid>
+        </Grid>
+
+        <!-- ========== 运行监视条(H100 第一步)==========
+             ① 数据全从**已有的**地方来,不动协议、不动虚拟机:
+                · 状态 / PC / 已执行条数 —— 执行是**分块驱动**的(`机.跑到([], 20_000_000)` 一块两千万条),
+                  每块结束那一帧状态就会把这些刷进镜像;
+                · 子进程 CPU 与物理内存 —— 走 OS 读数(`虚拟机C.进程用量`,跨进程那台给的是子进程的真数)。
+             ② 没事的时候显示"就绪";正在跑的那一台才报数,不编数。 -->
+        <Border Grid.Row="3" Background="{DynamicResource 主题面板刷}" BorderThickness="0,1,0,0"
+                BorderBrush="{DynamicResource 主题菜单刷}" Padding="8,2">
+            <TextBlock x:Name="运行监视条" FontFamily="Consolas" FontSize="12"
+                       Foreground="{DynamicResource 主题前景刷}" TextTrimming="CharacterEllipsis"
+                       Text="就绪"/>
+        </Border>
+    </Grid>
+</Window>

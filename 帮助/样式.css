@@ -1,0 +1,83 @@
+/* HB 帮助站点样式(由 hbcc --生成帮助 生成,别手改;要改排改 引擎\帮助站点C.HTML.cs 的样式表) */
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; color: #24292f; background: #fff;
+       font: 15px/1.9 "Microsoft YaHei", "PingFang SC", "Segoe UI", sans-serif; }
+a { color: #1a5fb4; text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+/* 顶部分类横条(照 runoob 那两排:一眼看见还有哪几大块) */
+.横条 { position: fixed; top: 0; left: 0; right: 0; z-index: 9;
+        display: flex; flex-wrap: wrap; gap: 1.1rem; align-items: center;
+        padding: 0.6rem 1.25rem; background: #f6f7f9; border-bottom: 1px solid #d8dce2; }
+.横条 a { font-size: 0.95rem; }
+.横条 .横条首页 { font-weight: 700; }
+
+/* 左边折叠树 */
+.侧栏 { position: fixed; top: 3rem; bottom: 0; left: 0; width: 22rem; overflow: auto;
+        padding: 0.9rem 0.75rem 3rem 1rem; background: #fbfcfd; border-right: 1px solid #d8dce2; }
+.侧栏 .站点名 { margin: 0 0 0.7rem; font-size: 1.05rem; font-weight: 700; }
+.侧栏 ul { list-style: none; margin: 0; padding-left: 0.9rem; }
+.侧栏 > ul { padding-left: 0; }
+.侧栏 li { margin: 0.15rem 0; }
+.侧栏 summary { cursor: pointer; }
+.侧栏 summary > a { color: #24292f; }
+.侧栏 li > a { color: #1a5fb4; }
+.侧栏 li.当前 > a { font-weight: 700; color: #0b5cad; }
+
+/* 正文区 */
+.内容区 { margin-left: 22rem; padding-top: 3rem; }
+article { max-width: 54rem; padding: 1.2rem 2.6rem 5rem 2.6rem; }
+.面包屑 { font-size: 0.88rem; color: #57606a; margin: 0.2rem 0 1.1rem; }
+h1.页标题 { font-size: 1.75rem; line-height: 1.35; margin: 0 0 0.4rem; padding-bottom: 0.6rem;
+           border-bottom: 2px solid #eaeef2; }
+h2 { font-size: 1.25rem; margin: 2.2rem 0 0.7rem; }
+h2.组标题 { padding-top: 0.4rem; border-top: 1px solid #eaeef2; }
+p { margin: 0.75rem 0; }
+p.导语 { color: #3d444d; }
+p.节导语 { color: #3d444d; background: #f6f8fa; border-left: 3px solid #cfd8e3;
+            padding: 0.55rem 0.9rem; margin: 0.9rem 0 1.1rem; border-radius: 0 4px 4px 0; }
+p.正文 { font-size: 1.02rem; }
+p.页脚注 { color: #57606a; font-size: 0.9rem; margin-top: 1.6rem; }
+code { padding: 0.12em 0.38em; border-radius: 4px; background: #eff1f4;
+       font-family: Consolas, "Courier New", monospace; font-size: 0.94em; }
+
+/* 入口表 / 索引表:一条一行,行间留白(不再是一条长龙) */
+ul.入口表 { margin: 0.6rem 0 0; padding-left: 1.2rem; }
+ul.入口表 li { margin: 0.55rem 0; }
+table.索引表 { border-collapse: collapse; width: 100%; margin: 0.8rem 0 1.4rem; }
+table.索引表 th, table.索引表 td { text-align: left; vertical-align: top;
+        padding: 0.5rem 0.8rem; border-bottom: 1px solid #eaeef2; }
+table.索引表 th { background: #f6f8fa; font-size: 0.92rem; color: #3d444d; }
+table.索引表 tr:hover td { background: #f9fbfd; }
+
+/* 类库页那张**公开方法表**(从库源码现场数出来;签名一列用等宽字) */
+table.方法表 { border-collapse: collapse; width: 100%; margin: 0.8rem 0 1.4rem; }
+table.方法表 th, table.方法表 td { text-align: left; vertical-align: top;
+        padding: 0.45rem 0.8rem; border-bottom: 1px solid #eaeef2; }
+table.方法表 th { background: #f6f8fa; font-size: 0.92rem; color: #3d444d; }
+table.方法表 tr:hover td { background: #f9fbfd; }
+table.方法表 td:nth-child(2) { font-family: Consolas, "Courier New", monospace; font-size: 0.92em; }
+/* **方法名那一列不折行**:名称不长就该在一行里放下(汉字之间处处可断行,
+   会把「是需转义」竖着劈成两行);真碰上特别长的名字也只是把这一列撑宽,不竖排 */
+table.方法表 td:first-child, table.方法表 th:first-child { white-space: nowrap; }
+ul.正文列表 { margin: 0.5rem 0 1rem; padding-left: 1.3rem; }
+ul.正文列表 li { margin: 0.5rem 0; }
+
+/* **代码框**:头注释里用 ``` 围起来的那段 = 一整个方框(等宽、浅底、细边、超宽可横向滚)
+   说明文字里的 `代码` 还是那种小胶囊(code),只有成段落的走这个框 */
+pre.代码框 { margin: 0.7rem 0 1.1rem; padding: 0.7rem 0.95rem; overflow-x: auto;
+       background: #f6f8fa; border: 1px solid #d8dee4; border-radius: 6px; }
+pre.代码框 code { padding: 0; background: none; font-size: 0.92rem; line-height: 1.7;
+       white-space: pre; }
+
+/* 页脚翻页 */
+.翻页 { display: flex; justify-content: space-between; gap: 1rem; margin-top: 2.6rem;
+        padding-top: 1rem; border-top: 1px solid #eaeef2; }
+
+@media (max-width: 62rem) {
+  .侧栏 { position: static; width: auto; border-right: 0; border-bottom: 1px solid #d8dce2;
+          max-height: 22rem; }
+  .内容区 { margin-left: 0; padding-top: 0; }
+  article { padding: 1rem 1.25rem 3rem; }
+}

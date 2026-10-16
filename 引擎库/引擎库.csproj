@@ -1,0 +1,30 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <RootNamespace>hehshihbeen_compiler</RootNamespace>
+    <AssemblyName>hehshihbeen-compiler.核心</AssemblyName>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+    <!-- 供 MAUI/WPF/hbcc 复用的纯 C# 引擎;链接根目录 引擎/中间层/自检 源码,零 UI 依赖 -->
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="..\引擎\*.cs" Link="引擎\%(Filename)%(Extension)" />
+    <Compile Include="..\中间层\*.cs" Link="中间层\%(Filename)%(Extension)" />
+    <Compile Include="..\自检\*.cs" Link="自检\%(Filename)%(Extension)" />
+    <Compile Include="..\C后端\*.cs" Link="C后端\%(Filename)%(Extension)" />
+    <!-- T28(2026-09-27):`异常收集C` 是**纯 C#、零 UI 依赖**的那个异常通道(界面那侧只装两个回调进来)。
+         它一直住在仓库根,以前只有 WPF 主程序编到它;自检要真跑"后台线程来的记录会排队"就得让
+         hbcc / 引擎库也编到它 —— 所以在这儿显式链一份(不是搬文件:搬了会与主程序的默认通配撞成重复类型)。 -->
+    <Compile Include="..\异常收集C.cs" Link="异常收集C.cs" />
+    <PackageReference Include="ToolGood.Words.FirstPinyin" Version="3.1.0.4" />
+  </ItemGroup>
+
+  <!-- R3-6-4 批 1:C 后端的运行期源码(手写的那份 `C后端\运行时.c`)嵌进程序集 -->
+  <ItemGroup>
+    <EmbeddedResource Include="..\C后端\运行时.c" LogicalName="hb运行时.c" />
+  </ItemGroup>
+
+</Project>

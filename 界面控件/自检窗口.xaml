@@ -1,0 +1,36 @@
+<Window x:Class="hehshihbeen_compiler.界面控件.自检窗口"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="自检" Width="1000" Height="560" MinWidth="640" MinHeight="320"
+        WindowStartupLocation="CenterOwner" ShowInTaskbar="False"
+        FontFamily="Microsoft YaHei UI" FontSize="13">
+    <DockPanel Margin="10">
+        <StackPanel DockPanel.Dock="Top">
+            <StackPanel Orientation="Horizontal">
+                <Button x:Name="跑按钮" Content="开始跑一遍" Width="110" Padding="0,4" Click="跑_Click"
+                        ToolTip="在后台线程上跑全套自检(界面不冻);跑的时候可以点『停止』"/>
+                <Button x:Name="停按钮" Content="停止" Width="80" Padding="0,4" Margin="8,0,0,0" IsEnabled="False"
+                        Click="停_Click" ToolTip="跑完当前这一组就停(自检自己不会被打断,所以是『这一组之后』而不是『立刻』)"/>
+                <Button Content="复制结果" Width="90" Padding="0,4" Margin="8,0,0,0" Click="复制_Click"
+                        ToolTip="把列表里现在显示着的这些行复制成 Tab 分隔的文本(粘进别处用)"/>
+                <CheckBox x:Name="只看失败" Content="只看失败 / 跳过" Margin="16,0,0,0" VerticalAlignment="Center"
+                          Click="筛选_Changed" ToolTip="勾上就只留红色的那些 —— 跑完一眼看到底哪几条不对"/>
+            </StackPanel>
+            <ProgressBar x:Name="进度" Height="6" Margin="0,8,0,0" Minimum="0" Maximum="100" Value="0"/>
+            <TextBlock x:Name="摘要" Margin="0,6,0,0" TextWrapping="Wrap"
+                       Text="点『开始跑一遍』跑全套(约几分钟)。绿 = 通过,红 = 失败,灰 = 跳过(环境缺件就如实跳过)。"/>
+        </StackPanel>
+        <ListView x:Name="列表" Margin="0,8,0,0" FontFamily="Consolas" FontSize="12"
+                  Background="#F7F7F7" BorderThickness="0"
+                  ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                  MouseDoubleClick="列表_MouseDoubleClick">
+            <ListView.View>
+                <GridView>
+                    <GridViewColumn Header="结果" Width="60" DisplayMemberBinding="{Binding 显示结果}"/>
+                    <GridViewColumn Header="组" Width="150" DisplayMemberBinding="{Binding 组}"/>
+                    <GridViewColumn Header="断言" Width="640" DisplayMemberBinding="{Binding 名}"/>
+                </GridView>
+            </ListView.View>
+        </ListView>
+    </DockPanel>
+</Window>

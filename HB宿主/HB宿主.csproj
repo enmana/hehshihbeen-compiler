@@ -1,0 +1,78 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!--
+    HB 宿主:把编译好的机器码**贴在自己的屁股后面**,启动时就地运行。
+    只链接"虚拟机 + 它用到的基础类型",不带编译器、不带自检,产物小、启动快。
+    `hbcc` 的 exe 选项就是"复制一份这个宿主 + 追加机器码"。
+  -->
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <RootNamespace>hehshihbeen_compiler</RootNamespace>
+    <AssemblyName>HB宿主</AssemblyName>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+    <InvariantGlobalization>true</InvariantGlobalization>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="..\引擎\虚拟机C.cs" Link="引擎\虚拟机C.cs" />
+    <Compile Include="..\引擎\中断闸门C.cs" Link="引擎\中断闸门C.cs" />   <!-- H22:虚拟机主循环每 4096 条查一次"要不要停" -->
+    <!-- T26:这里**故意不链** `..\引擎\运行期错误C.cs` —— 理由见下面 ProjectReference 那段 -->
+    <Compile Include="..\引擎\文字输出C.cs" Link="引擎\文字输出C.cs" />
+    <Compile Include="..\引擎\程序包C.cs" Link="引擎\程序包C.cs" />
+    <Compile Include="..\引擎\寄存器C.cs" Link="引擎\寄存器C.cs" />
+    <Compile Include="..\引擎\宿主能力C.cs" Link="引擎\宿主能力C.cs" />   <!-- P28:读文件 / 写文件 / 当前时间 -->
+    <Compile Include="..\引擎\网络能力C.cs" Link="引擎\网络能力C.cs" />   <!-- D5:宿主能力C 里的网址白名单与同步 GET 实现 -->
+    <!-- H64:文件读写口子(宿主能力C 的读 / 写 / 列目录 … 全走它)。
+         两**份**小文件就够:路径规则 + 文件接口与文本编码口径;
+         (`文本落盘C` **不链** —— 它那一侧还带着编译器的报错类型 `编译异常C`,
+          字节级的编码 / 解码口径已经在 `虚拟文件C` 里,它是转调) -->
+    <Compile Include="..\引擎\虚拟路径C.cs" Link="引擎\虚拟路径C.cs" />
+    <Compile Include="..\引擎\虚拟文件C.cs" Link="引擎\虚拟文件C.cs" />
+    <!-- H39-1:跑程序服务这一档(前端用标准输入输出管道把命令送进来就地把程序跑掉)。
+         `跑程序协议C` 是帧格式 / 消息号 / 载荷的唯一事实源;`跑程序后端C` 是子进程那一侧的主循环。
+         前端那一份(`跨进程虚拟机C.cs`)**不在这儿**:它是前端的事(而且要用 Process,别进宿主)。 -->
+    <Compile Include="..\引擎\跑程序协议C.cs" Link="引擎\跑程序协议C.cs" />
+    <Compile Include="..\引擎\跑程序后端C.cs" Link="引擎\跑程序后端C.cs" />
+    <!-- H39-2:后端要维护"调用栈记账"(跑到断点那一次跑掉几十万条,只能由真正执行的那一侧记),
+         于是它也链上这一份纯记账类(零依赖)。**`指令C.cs` 不能链** —— 它引用了 `中间层指令C`,
+         所以"这条是不是调用"的判据收在 `虚拟机C.是调用指令` 一处。 -->
+    <Compile Include="..\引擎\调用栈标记C.cs" Link="引擎\调用栈标记C.cs" />
+    <!-- H13:热重载要在机器上留一份"装载那一刻"的快照(`标签表` / `名字表` / `内存分区` / `初值表`),
+         所以这两份**纯数据**要跟着 `虚拟机C.cs` 一起链进来(都是零依赖:`名字表C.cs` 自己带
+         `名字项C` / `字段项C` / `参数项C`,`类型C.cs` 只有 enum / record / 常量表,谁也不引中间层)。
+         **不是**"把编译器搬进宿主":热重载本身在宿主里跑不起来(它要编译结果),这里只是让类型可见。 -->
+    <Compile Include="..\引擎\名字表C.cs" Link="引擎\名字表C.cs" />
+    <Compile Include="..\引擎\类型C.cs" Link="引擎\类型C.cs" />
+    <Compile Include="..\引擎\文件判定C.cs" Link="引擎\文件判定C.cs" />   <!-- H48:名字表C 判"两个路径是不是同一个文件"要它 -->
+    <!-- ⚠⚠ **第405 / 406批欠下的两行** —— 这两份一直没链,`HB宿主` 从 2026-10-10 14:40
+         起就**编不过了**(26 条错:CS0103 宿主弹窗C ×N + CS0234 ObjLoader)。
+         后果不是"少个功能":盘上那份 `HB宿主.exe` 就此冻结在那一刻,而引擎继续往前走 ——
+         位图(70~77)、剪贴板 / 提示框 / 选文件(80~85)全都**只在新代码里**。
+         界面「执行」起的正是这份老壳,于是 `示例59_剪贴板与弹窗` 的 `复制` 给 0、提示框读回垃圾
+         (2026-10-11 用户实测报的缺陷,H92)。
+         ⇒ 这个工程是**逐个列文件**的(`EnableDefaultCompileItems=false`),`引擎\` 下新增了它用得上的
+           .cs 必须回这儿补一行;`图形宿主.csproj` 那边同理(它已经因为漏 `位图仓C.cs` 栽过一次)。
+           判据 = `工具\五端构建.ps1`(六端闸门),新加能力层文件之后**一定要跑一次**。 -->
+    <Compile Include="..\引擎\宿主弹窗C.cs" Link="引擎\宿主弹窗C.cs" />   <!-- H91:剪贴板 / 提示框 / 选文件(宿主能力 80~85 的桌面实现,Win32 零框架依赖) -->
+    <Compile Include="..\引擎\ObjLoader.cs" Link="引擎\ObjLoader.cs" />   <!-- 宿主能力C 的"读 OBJ 模型"那条(纯 System.*,不依赖界面) -->
+    <Compile Include="..\引擎\选择器C.cs" Link="引擎\选择器C.cs" />       <!-- 宿主能力C 的"让用户挑点什么"(纯 System.IO,平台实现挂在别处) -->
+    <Compile Include="Program.cs" />
+  </ItemGroup>
+
+  <!-- R1-6 批 1:图形宿主(桌面壳)。`图形宿主C.cs` / `图形事件C.cs` / `运行期错误C.cs` 都由这个项目带进来
+       (**别在这儿再链一遍**:链了就是同名类型两份拷贝 —— T26 之前正是那样,HB宿主 编出 16 条 CS0436)。
+       机器码里用到图形能力才会 `new 桌面壳C()`(见 Program.cs 的 挂图形壳),不用的程序仍是纯控制台。
+
+       T26(2026-09-27 评测整改):`运行期错误C` **全仓只留一份定义**,就在 `图形宿主.dll` 里 ——
+       HB宿主 与 图形宿主 本来就都非要它不可(虚拟机要抛、帧数护栏要抛),留两份就是"真信号被当噪声堆着"。
+       于是 `Program.cs` 的 `catch (运行期错误C 运行错)` 与 `虚拟机C` 抛的**是同一个类型**了;
+       `运行期错误C.是运行期错误` 那套**按类型名判**照旧留着 —— 它是给"宿主能力C 里 catch 别人程序集
+       抛上来的运行期错误"用的,与这里是不是同一个程序集无关。 -->
+  <ItemGroup>
+    <ProjectReference Include="..\图形宿主\图形宿主.csproj" />
+  </ItemGroup>
+
+</Project>

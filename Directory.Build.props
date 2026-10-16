@@ -1,0 +1,27 @@
+<Project>
+
+  <!--
+    发布默认用 Release(用户拍板,2026-09):
+      · Release 的虚拟机实测 107 M 条指令/秒,Debug 只有 10.7 M —— **差 10 倍**(见 任务清单 性能实测)。
+      · 所以 `dotnet build` / `dotnet run` 不带 -c 时,一律按 Release 走;
+        要调试(断点/看变量/单步 C# 代码)再显式 `-c Debug`,或用 VS 的配置下拉切回 Debug。
+      · 这条只改"默认配置",两种构建都还在:bin\Release\net10.0-windows\ 与 bin\Debug\net10.0-windows\。
+      · 两个构建共用一份设置(选项.json / 主题 / 最近项目.json):首次启动 Release 会自动从隔壁目录搬过来
+        (见 引擎\程序目录C.cs)。
+  -->
+  <PropertyGroup>
+    <Configuration Condition="'$(Configuration)' == ''">Release</Configuration>
+  </PropertyGroup>
+
+  <!--
+    T26(2026-09-27 评测整改):**语言版本显式钉住**。
+      不写 `LangVersion` 时它跟着 SDK 走(`net10.0` 现在解析成 C# 14)—— 与 `global.json` 那个
+      `rollForward` 是同一类病:装着什么就编成什么,"今天编得过、换台机器编不过"查起来极贵。
+      钉住之后升级语言版本要**主动改这一行**(改完六端一起跑闸门),不再由换 SDK 顺带发生。
+      `Nullable` 不在这儿统一开(各工程默认关,一开会把几百条 CS86xx 灌进来 —— 那不是本批的活)。
+  -->
+  <PropertyGroup>
+    <LangVersion>14.0</LangVersion>
+  </PropertyGroup>
+
+</Project>

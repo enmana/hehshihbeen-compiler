@@ -1,0 +1,106 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <RootNamespace>hehshihbeen_compiler</RootNamespace>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UseWPF>true</UseWPF>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <!-- 嵌套工程目录一律不参与 WPF 编译(它们是独立工程:引擎库/编译器CLI/HB宿主/图形宿主/MobileIDE);
+         `本地包\**` 是仓库内 NuGet 源(自制 AvalonEdit 包 + 它的打包工程 —— 打包工程自己会生成
+         `本地包\打包\obj\**\*.AssemblyInfo.cs`,不收进来会撞"特性重复");`工具\临时\**` 是**临时探针**放的窝
+         (自检/实测脚本、一次性 csproj)—— 它绝不能进主程序的编译,
+         不然一个探针里的 Main/AssemblyInfo 会把整个 WPF 构建搞成"特性重复"(C10 实测时踩到) -->
+    <!-- ⚠ `obj\**` / `bin\**` 要排 —— 但**光排这两行不够**:WPF 的临时工程
+         (`*_wpftmp.csproj`,`obj\` 下那 2000 多个 `*_wpftmp.AssemblyInfo.cs` 就是它留下的)
+         **不照 `DefaultItemExcludes` 收文件**,它按"默认通配 `**/*.cs`"把整棵树都收进来 ——
+         包括 `工具\模型工具\**\obj\Release\*.AssemblyInfo.cs` 与我们自己的 wpftmp 生成物,
+         于是构建当场 28 个「特性重复」(2026-10-11 实测:清空 `obj\` 重构建也一样红)。
+         ⇒ 正解是**关掉默认收集、把源码目录一个个显式列出来**(见下面那个 ItemGroup);
+         `DefaultItemExcludes` 仍然留着 —— 它是显式通配的过滤器,把 `obj/bin` 挡在外面。 -->
+    <DefaultItemExcludes>$(DefaultItemExcludes);obj\**;bin\**;引擎库\**;编译器CLI\**;HB宿主\**;图形宿主\**;MobileIDE\**;src\**;本地包\**;工具\临时\**</DefaultItemExcludes>
+  </PropertyGroup>
+
+  <!-- R4-14(2026-10-11):**关掉默认 Compile 收集,改成一个目录一个目录显式列**。
+       为什么非改不可:WPF 构建会生成一个临时工程(`obj\...\*_wpftmp.csproj`),
+       那个临时工程**不认 `DefaultItemExcludes`** —— 它按默认通配 `**/*.cs` 把整棵树收进来,
+       连 `工具\模型工具\*\obj\Release\*.AssemblyInfo.cs` 和它自己生成的 wpftmp 程序集特性
+       一起收 ⇒ 一构建就是 28 个「特性重复」,把整个 WPF 端堵死(实测:清空 `obj\` 重构建一样红)。
+       显式列出来之后,临时工程继承的是**这份清单**(而不是现场通配)⇒ 干净。
+       ⚠ 新增源码目录时**记得回这里加一行**。 -->
+  <ItemGroup>
+    <Compile Include="*.cs" />
+    <Compile Include="工具\反汇编器C.cs" />
+    <Compile Include="C后端\**\*.cs" />
+    <Compile Include="中间层\**\*.cs" />
+    <Compile Include="引擎\**\*.cs" />
+    <Compile Include="自检\**\*.cs" />
+    <Compile Include="界面控件\**\*.cs" />
+    <Compile Include="选卡控件\**\*.cs" />
+    <Compile Include="配置\**\*.cs" />
+    <!-- ⚠ `src\**` 一律不收 —— 同上面那条规矩:它是**另一套独立工程**
+         (Engine.Core / Engine.Scene / Engine.Renderer / Engine.Renderer.Veldrid / Engine.Content
+          + Samples\SimpleSample,每个都有自己的 csproj),不该编进 WPF 主程序。
+         曾把这 14 个文件逐个 `<Compile Include>` 进来,当场两个坑:
+         ① `src\Samples\SimpleSample\Program.cs` 自带 `Main` ⇒ 与 App.xaml 生成的 Main 撞
+            CS0017「程序定义了多个入口点」;
+         ② 那些文件自身的缺陷(`SimpleRenderer.cs` 缺 `using System.Numerics;`、`ObjLoader.cs` 缺
+            `ResolveIndex`)变成主程序的 5 个报错,还把真正的 MC3074 遮在后面。
+         引擎要构建 / 要跑示例,走它自己的工程:
+         `dotnet build src\Samples\SimpleSample\SimpleSample.csproj`
+         (`引擎\**\*.cs` 这条通配已经涵盖 `引擎\ObjLoader.cs` / 宿主能力C / 宿主弹窗C / 选择器C,
+          不必再逐条列 —— 逐条列会撞 CS2002「源文件指定了多次」。) -->
+  </ItemGroup>
+
+  <PropertyGroup>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="assets\保存.png" />
+    <None Remove="assets\保存_0.png" />
+    <None Remove="assets\打开_0.png" />
+    <None Remove="assets\执行.png" />
+    <None Remove="assets\执行_0.png" />
+    <None Remove="assets\撤销.png" />
+    <None Remove="assets\撤销_0.png" />
+    <None Remove="assets\新建.png" />
+    <None Remove="assets\汇编.png" />
+    <None Remove="assets\汇编_0.png" />
+    <None Remove="assets\清除.png" />
+    <None Remove="assets\清除_0.png" />
+    <None Remove="assets\生成_0.png" />
+    <None Remove="assets\重做.png" />
+    <None Remove="assets\重做_0.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="ToolGood.Words.FirstPinyin" Version="3.1.0.4" />
+    <!-- H21:不再按 `HintPath` 硬引用根目录那份散装 dll,改走仓库内本地 NuGet 源(`本地包\`)。
+         包里的程序集是**打过补丁的自建 6.3.2**(不是 nuget.org 上的官方 6.3.1.120)——
+         为什么、补丁是什么、怎么重打:见 `本地包\打包\打包.csproj` 与 `第三方组件.md`。 -->
+    <PackageReference Include="HB.AvalonEdit" Version="6.3.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="assets\保存_0.png" />
+    <Resource Include="assets\打开_0.png" />
+    <Resource Include="assets\执行_0.png" />
+    <Resource Include="assets\撤销_0.png" />
+    <Resource Include="assets\汇编_0.png" />
+    <Resource Include="assets\清除_0.png" />
+    <Resource Include="assets\生成_0.png" />
+    <Resource Include="assets\重做_0.png" />
+  </ItemGroup>
+
+  <!-- R3-6-4 批 1:C 后端的运行期源码(`C后端\运行时.c`)嵌进程序集 ——
+       引擎/自检/CLI 三处都要能在任意工作目录下拼出完整的 C 源码。
+       (C后端\*.cs 由默认通配收进编译,不用另写 Compile) -->
+  <ItemGroup>
+    <EmbeddedResource Include="C后端\运行时.c" LogicalName="hb运行时.c" />
+  </ItemGroup>
+
+</Project>

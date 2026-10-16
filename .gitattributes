@@ -1,0 +1,4 @@
+# GitHub 语言统计:帮助站点是生成物(300 多个 .html)。不排除掉,仓库会被算成 HTML 项目而不是 C#,
+# 搜索与 AI 爬虫都会认错项目类型。
+帮助/** linguist-documentation=true
+*.html linguist-detectable=false

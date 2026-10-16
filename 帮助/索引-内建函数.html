@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>内建函数 —— 分类索引</title>
+<meta name="description" content="语言级内建函数逐条(和 `申请` / `读取行` 同一档)。">
+<link rel="stylesheet" href="样式.css">
+</head>
+<body>
+<nav class="侧栏">
+<div class="站点名"><a href="index.html">帮助总目录</a></div>
+<ul class="树">
+  <li>
+    <details>
+      <summary><a href="目录/介绍-语言特性速览.html">介绍</a></summary>
+      <ul>
+      <li><a href="目录/介绍-语言特性速览.html">语言特性速览(想学什么找哪儿)</a></li>
+      <li><a href="目录/介绍-文档分工.html">这些文档谁说了算</a></li>
+      </ul>
+    </details>
+  </li>
+  <li>
+    <details>
+      <summary><a href="目录/上手-1-界面长什么样.html">上手</a></summary>
+      <ul>
+      <li><a href="目录/上手-1-界面长什么样.html">1,界面长什么样</a></li>
+      <li><a href="目录/上手-2-启动页-程序一打开先看到它-主窗口这时藏着.html">2,启动页(程序一打开先看到它,主窗口这时藏着)</a></li>
+      <li><a href="目录/上手-3-新建---打开-全程序只有这一套命令-菜单-工具栏-右键都调同一份实现.html">3,新建 / 打开(全程序只有这一套命令:菜单、工具栏、右键都调同一份实现)</a></li>
+      <li><a href="目录/上手-4-菜单会自己灰掉-不用猜哪个能用.html">4,菜单会自己灰掉(不用猜哪个能用)</a></li>
+      <li><a href="目录/上手-5-工具栏与-编译在哪儿.html">5,工具栏与&quot;编译在哪儿&quot;</a></li>
+      <li><a href="目录/上手-6-怎么算-跑对了.html">6,怎么算&quot;跑对了&quot;</a></li>
+      <li><a href="目录/上手-7-智能补全.html">7,智能补全</a></li>
+      <li><a href="目录/上手-8-数据放哪儿-内存有多大.html">8,数据放哪儿、内存有多大</a></li>
+      <li><a href="目录/上手-9-工程文件--hbp----项目的-清单.html">9,工程文件(.hbp)—— 项目的&quot;清单&quot;</a></li>
+      <li><a href="目录/上手-10-多文件与复用怎么选.html">10,多文件与复用怎么选</a></li>
+      <li><a href="目录/上手-11-模块-把库的名字圈起来-两个库可以同名.html">11,模块(把库的名字圈起来;两个库可以同名)</a></li>
+      <li><a href="目录/上手-12-编译期优化-默认开-平时不用管.html">12,编译期优化(默认开,平时不用管)</a></li>
+      <li><a href="目录/上手-13-控制台输入输出-给人用的那套.html">13,控制台输入输出(给人用的那套)</a></li>
+      <li><a href="目录/上手-14-编辑器里的代码检查-下划线---悬停提示.html">14,编辑器里的代码检查(下划线 + 悬停提示)</a></li>
+      <li><a href="目录/上手-15-编成独立-exe-三档打包方式.html">15,编成独立 exe:三档打包方式</a></li>
+      <li><a href="目录/上手-16-命令行-不开界面也能用--hbcc--h--那份是最新最全的-这里只列常用的.html">16,命令行(不开界面也能用;`hbcc -h` 那份是最新最全的,这里只列常用的)</a></li>
+      <li><a href="目录/上手-17-断点与单步-调试.html">17,断点与单步(调试)</a></li>
+      <li><a href="目录/上手-18-条件的逻辑运算-------------与三目.html">18,条件的逻辑运算(&amp;&amp; / || / !)与三目</a></li>
+      <li><a href="目录/上手-19-字符串放进结构---数组.html">19,字符串放进结构 / 数组</a></li>
+      <li><a href="目录/上手-20-可写回的字符串参数--出--与-返回串直接进表达式.html">20,可写回的字符串参数 `出` 与&quot;返回串直接进表达式&quot;</a></li>
+      <li><a href="目录/上手-21-程序自带的测试--测试-----断言--英文别名--test-----assert.html">21,程序自带的测试:`测试` / `断言`(英文别名 `test` / `assert`)</a></li>
+      <li><a href="目录/上手-22-宿主能力-文件-目录-环境变量与时间.html">22,宿主能力:文件、目录、环境变量与时间</a></li>
+      <li><a href="目录/上手-23-汇编源码--hba-与-参与编译.html">23,汇编源码(.hba)与&quot;参与编译&quot;</a></li>
+      <li><a href="目录/上手-24-手机端-MobileIDE-安卓.html">24,手机端(MobileIDE,安卓)</a></li>
+      <li><a href="目录/上手-25-图形界面-开一个窗口-画一屏.html">25,图形界面:开一个窗口、画一屏</a></li>
+      <li><a href="目录/上手-26-结构导图.html">26,结构导图</a></li>
+      <li><a href="目录/上手-27-还没有的写法-逐条真编核对过-别一条条撞上去.html">27,还没有的写法(逐条真编核对过,别一条条撞上去)</a></li>
+      <li><a href="目录/上手-28-错误怎么传-没有异常-失败一律靠返回值.html">28,错误怎么传(没有异常,失败一律靠返回值)</a></li>
+      <li><a href="目录/上手-29-回调-把函数当参数传-地址---间接调用.html">29,回调:把函数当参数传(地址 + 间接调用)</a></li>
+      <li><a href="目录/上手-30-流式读写-一块一块地读一个大文件.html">30,流式读写:一块一块地读一个大文件</a></li>
+      <li><a href="目录/上手-31-网络-自己连一台主机-或者当一个小服务端.html">31,网络:自己连一台主机、或者当一个小服务端</a></li>
+      <li><a href="目录/上手-32-运行时-睡眠---冲刷---改名---临时目录.html">32,运行时:睡眠 / 冲刷 / 改名 / 临时目录</a></li>
+      <li><a href="目录/上手-33-异步-别让一次阻塞调用把整帧卡住.html">33,异步:别让一次阻塞调用把整帧卡住</a></li>
+      <li><a href="目录/上手-34-数据表-盘上一张定长记录表--Sample-库-数据表-hb.html">34,数据表:盘上一张定长记录表(`Sample\库\数据表.hb`)</a></li>
+      </ul>
+    </details>
+  </li>
+  <li>
+    <details>
+      <summary><a href="目录/语言细节-中间层是什么.html">语言细节</a></summary>
+      <ul>
+      <li><a href="目录/语言细节-中间层是什么.html">中间层是什么</a></li>
+      <li><a href="目录/语言细节-基础类型.html">基础类型</a></li>
+      <li><a href="目录/语言细节-保留字-不能拿来当变量-字段-容器名-参数名.html">保留字(不能拿来当变量/字段/容器名/参数名)</a></li>
+      <li><a href="目录/语言细节-语句结束符-----2026-09-起必写.html">语句结束符 `;`(2026-09 起必写)</a></li>
+      <li><a href="目录/语言细节-字符串.html">字符串</a></li>
+      <li><a href="目录/语言细节-堆.html">堆</a></li>
+      <li><a href="目录/语言细节-数据与函数的样子.html">数据与函数的样子</a></li>
+      <li><a href="目录/语言细节-条件分支.html">条件分支</a></li>
+      <li><a href="目录/语言细节-表达式.html">表达式</a></li>
+      <li><a href="目录/语言细节-比较当值用-2026-09.html">比较当值用(2026-09)</a></li>
+      <li><a href="目录/语言细节-函数调用可以直接写进表达式.html">函数调用可以直接写进表达式</a></li>
+      <li><a href="目录/语言细节-数组参数.html">数组参数</a></li>
+      <li><a href="目录/语言细节-结构参数.html">结构参数</a></li>
+      <li><a href="目录/语言细节-特别注意.html">特别注意</a></li>
+      </ul>
+    </details>
+  </li>
+  <li>
+    <details>
+      <summary><a href="目录/硬上限-表达式临时寄存器.html">硬上限</a></summary>
+      <ul>
+      <li><a href="目录/硬上限-表达式临时寄存器.html">表达式临时寄存器</a></li>
+      <li><a href="目录/硬上限-数组长度.html">数组长度</a></li>
+      <li><a href="目录/硬上限-字符串数组长度.html">字符串数组长度</a></li>
+      <li><a href="目录/硬上限-多维数组维数.html">多维数组维数</a></li>
+      <li><a href="目录/硬上限-情况常量.html">情况常量</a></li>
+      <li><a href="目录/硬上限-包含深度.html">包含深度</a></li>
+      <li><a href="目录/硬上限-函数帧.html">函数帧</a></li>
+      <li><a href="目录/硬上限-语句块嵌套.html">语句块嵌套</a></li>
+      </ul>
+    </details>
+  </li>
+  <li>
+    <details>
+      <summary><a href="目录/类型-字节.html">类型</a></summary>
+      <ul>
+      <li><a href="目录/类型-字节.html">字节(byte)</a></li>
+      <li><a href="目录/类型-逻辑.html">逻辑(logic)</a></li>
+      <li><a href="目录/类型-字符.html">字符(char)</a></li>
+      <li><a href="目录/类型-短整数.html">短整数(short)</a></li>
+      <li><a href="目录/类型-整数.html">整数(int)</a></li>
+      <li><a href="目录/类型-无符号短整数.html">无符号短整数(ushort)</a></li>
+      <li><a href="目录/类型-无符号整数.html">无符号整数(uint)</a></li>
+      <li><a href="目录/类型-文字.html">文字(rune)</a></li>
+      <li><a href="目录/类型-地址.html">地址(addr)</a></li>
+      <li><a href="目录/类型-浮点.html">浮点(float)</a></li>
+      <li><a href="目录/类型-字符串.html">字符串(string)</a></li>
+      <li><a href="目录/类型-回调.html">回调(callback)</a></li>
+      </ul>
+    </details>
+  </li>
+  <li>
+    <details>
+      <summary><a href="目录/指令-HALT.html">指令</a></summary>
+      <ul>
+      <li>
+        <details open>
+          <summary><a href="目录/指令-HALT.html">无操作数(5 条)</a></summary>
+          <ul>
+          <li><a href="目录/指令-HALT.html">停止 HALT</a></li>
+          <li><a href="目录/指令-RET.html">返回 RET</a></li>
+          <li><a href="目录/指令-NEWLINE.html">输出换行 NEWLINE</a></li>
+          <li><a href="目录/指令-BKPT.html">断点 BKPT</a></li>
+          <li><a href="目录/指令-NOP.html">无操作 NOP</a></li>
+          </ul>
+        </details>
+      </li>
+      <li>
+        <details>
+          <summary><a href="目录/指令-PUSH.html">单寄存器(18 条)</a></summary>
+          <ul>
+          <li><a href="目录/指令-PUSH.html">入栈 PUSH</a></li>
+          <li><a href="目录/指令-POP.html">出栈 POP</a></li>
+          <li><a href="目录/指令-NOT.html">取反 NOT</a></li>
+          <li><a href="目录/指令-IN.html">读取字符 IN</a></li>
+          <li><a href="目录/指令-OUT.html">输出字符 OUT</a></li>
+          <li><a href="目录/指令-CALL-REG.html">调用寄存器 CALL_REG</a></li>
+          <li><a href="目录/指令-JMP-REG.html">跳转寄存器 JMP_REG</a></li>
+          <li><a href="目录/指令-FSQRT.html">浮点开方 FSQRT</a></li>
+          <li><a href="目录/指令-F2I.html">浮点转整数 F2I</a></li>
+          <li><a href="目录/指令-I2F.html">整数转浮点 I2F</a></li>
+          <li><a href="目录/指令-CLZ.html">前导零 CLZ</a></li>
+          <li><a href="目录/指令-CTZ.html">尾随零 CTZ</a></li>
+          <li><a href="目录/指令-POPCNT.html">数一位 POPCNT</a></li>
+          <li><a href="目录/指令-FLOOR.html">浮点向下取整 FLOOR</a></li>
+          <li><a href="目录/指令-BSWAP.html">字节交换 BSWAP</a></li>
+          <li><a href="目录/指令-IABS.html">取整数绝对值 IABS</a></li>
+          <li><a href="目录/指令-SETCC.html">条件置位 SETCC</a></li>
+          <li><a href="目录/指令-GETRET.html">取返回地址 GETRET</a></li>
+          </ul>
+        </details>
+      </li>
+      <li>
+        <details>
+          <summary><a href="目录/指令-ADD.html">双寄存器(32 条)</a></summary>
+          <ul>
+          <li><a href="目录/指令-ADD.html">加法 ADD</a></li>
+          <li><a href="目录/指令-SUB.html">减法 SUB</a></li>
+          <li><a href="目录/指令-CMP.html">比较 CMP</a></li>
+          <li><a href="目录/指令-XOR.html">按位异或 XOR</a></li>
+          <li><a href="目录/指令-AND.html">与 AND</a></li>
+          <li><a href="目录/指令-OR.html">或 OR</a></li>
+          <li><a href="目录/指令-SHL.html">左移 SHL</a></li>
+          <li><a href="目录/指令-SHR.html">右移 SHR</a></li>
+          <li><a href="目录/指令-LOAD-INDIRECT.html">加载间接寻址 LOAD_INDIRECT</a></li>
+          <li><a href="目录/指令-STORE-INDIRECT.html">存储间接寻址 STORE_INDIRECT</a></li>
+          <li><a href="目录/指令-MOV.html">复制 MOV</a></li>
+          <li><a href="目录/指令-LOAD-WORD-INDIRECT.html">取字间接 LOAD_WORD_INDIRECT</a></li>
+          <li><a href="目录/指令-STORE-WORD-INDIRECT.html">存字间接 STORE_WORD_INDIRECT</a></li>
+          <li><a href="目录/指令-MUL.html">乘法 MUL</a></li>
+          <li><a href="目录/指令-DIV.html">除法 DIV</a></li>
+          <li><a href="目录/指令-MOD.html">取余 MOD</a></li>
+          <li><a href="目录/指令-JZ-REG.html">为零跳转寄存器 JZ_REG</a></li>
+          <li><a href="目录/指令-FADD.html">浮点加法 FADD</a></li>
+          <li><a href="目录/指令-FSUB.html">浮点减法 FSUB</a></li>
+          <li><a href="目录/指令-FMUL.html">浮点乘法 FMUL</a></li>
+          <li><a href="目录/指令-FDIV.html">浮点除法 FDIV</a></li>
+          <li><a href="目录/指令-SDIV.html">有符号除法 SDIV</a></li>
+          <li><a href="目录/指令-SMOD.html">有符号取余 SMOD</a></li>
+          <li><a href="目录/指令-MULH.html">高位乘 MULH</a></li>
+          <li><a href="目录/指令-FMAX.html">浮点最大值 FMAX</a></li>
+          <li><a href="目录/指令-FMIN.html">浮点最小值 FMIN</a></li>
+          <li><a href="目录/指令-FCOPYSIGN.html">浮点符号复制 FCOPYSIGN</a></li>
+          <li><a href="目录/指令-UMULH.html">双字乘高 UMULH</a></li>
+          <li><a href="目录/指令-UMADD.html">双字乘加 UMADD</a></li>
+          <li><a href="目录/指令-ROL.html">循环左移 ROL</a></li>
+          <li><a href="目录/指令-ROR.html">循环右移 ROR</a></li>
+          <li><a href="目录/指令-SADD.html">饱和加 SADD</a></li>
+          </ul>
+        </details>
+      </li>
+      <li>
+        <details>
+          <summary><a href="目录/指令-LOAD-IMMEDIATE.html">寄存器立即数(16 条)</a></summary>
+          <ul>
+          <li><a href="目录/指令-LOAD-IMMEDIATE.html">加载立即数 LOAD_IMMEDIATE</a></li>
+          <li><a href="目录/指令-ADD-IMMEDIATE.html">加立即数 ADD_IMMEDIATE</a></li>
+          <li><a href="目录/指令-SUB-IMMEDIATE.html">减立即数 SUB_IMMEDIATE</a></li>
+          <li><a href="目录/指令-CMP-IMMEDIATE.html">比较立即数 CMP_IMMEDIATE</a></li>
+          <li><a href="目录/指令-LUI.html">载入高位 LUI</a></li>
+          <li><a href="目录/指令-OR-IMMEDIATE.html">或立即数 OR_IMMEDIATE</a></li>
+          <li><a href="目录/指令-LOAD-WORD-FP.html">取字帧 LOAD_WORD_FP</a></li>
+          <li><a href="目录/指令-STORE-WORD-FP.html">存字帧 STORE_WORD_FP</a></li>
+          <li><a href="目录/指令-LOAD-ADDRESS-FP.html">取地址帧 LOAD_ADDRESS_FP</a></li>
+          <li><a href="目录/指令-SHL-IMMEDIATE.html">左移立即数 SHL_IMMEDIATE</a></li>
+          <li><a href="目录/指令-AND-IMMEDIATE.html">与立即数 AND_IMMEDIATE</a></li>
+          <li><a href="目录/指令-HOST-CALL.html">宿主调用 HOST_CALL</a></li>
+          <li><a href="目录/指令-SHR-IMMEDIATE.html">右移立即数 SHR_IMMEDIATE</a></li>
+          <li><a href="目录/指令-SIGN-EXT.html">符号扩展 SIGN_EXT</a></li>
+          <li><a href="目录/指令-ZERO-EXT.html">零扩展 ZERO_EXT</a></li>
+          <li><a href="目录/指令-RETN.html">带弹栈返回 RETN</a></li>
+          </ul>
+        </details>
+      </li>
+      <li>
+        <details open>
+          <summary><a href="目录/指令-LOAD.html">寄存器地址(6 条)</a></summary>
+          <ul>
+          <li><a href="目录/指令-LOAD.html">加载 LOAD</a></li>
+          <li><a href="目录/指令-STORE.html">存储 STORE</a></li>
+          <li><a href="目录/指令-JZ.html">为零跳转 JZ</a></li>
+          <li><a href="目录/指令-LOAD-ADDRESS.html">取地址 LOAD_ADDRESS</a></li>
+          <li><a href="目录/指令-LOAD-WORD.html">取字 LOAD_WORD</a></li>
+          <li><a href="目录/指令-STORE-WORD.html">存字 STORE_WORD</a></li>
+          </ul>
+        </details>
+      </li>
+      <li>
+        <details>
+          <summary><a href="目录/指令-JMP.html">跳转地址(9 条)</a></summary>
+          <ul>
+          <li><a href="目录/指令-JMP.html">跳转 JMP</a></li>
+          <li><a href="目录/指令-JG.html">大于跳转 JG</a></li>
+          <li><a href="目录/指令-JL.html">小于跳转 JL</a></li>
+          <li><a href="目录/指令-CALL.html">调用 CALL</a></li>
+          <li><a href="目录/指令-JEQ.html">相等跳转 JEQ</a></li>
+          <li><a href="目录/指令-JNE.html">不相等跳转 JNE</a></li>
+          <li><a href="目录/指令-JGE.html">大于等于跳转 JGE</a></li>
+          <li><a href="目录/指令-JLE.html">小于等于跳转 JLE</a></li>
+          <li><a href="目录/指令-TAILJMP.html">尾调用跳转 TAILJMP</a></li>
+          </ul>
+        </details>
+      </li>
+      <li>
+        <details open>
+          <summary><a href="目录/指令-CMP-SET.html">双寄存器小立即数(4 条)</a></summary>
+          <ul>
+          <li><a href="目录/指令-CMP-SET.html">比较取值 CMP_SET</a></li>
+          <li><a href="目录/指令-LOAD-WORD-INDEX.html">取字索引 LOAD_WORD_INDEX</a></li>
+          <li><a href="目录/指令-FCMP.html">浮点比较 FCMP</a></li>
+          <li><a href="目录/指令-GETBYTE.html">取字节 GETBYTE</a></li>
+          </ul>
+        </details>
+      </li>
+      <li>
+        <details>
+          <summary><a href="目录/指令-STORE-WORD-INDEX.html">三寄存器小立即数(9 条)</a></summary>
+          <ul>
+          <li><a href="目录/指令-STORE-WORD-INDEX.html">存字索引 STORE_WORD_INDEX</a></li>
+          <li><a href="目录/指令-ADDR-IDX.html">取地址索引 ADDR_IDX</a></li>
+          <li><a href="目录/指令-LDH-IDX.html">取半字索引 LDH_IDX</a></li>
+          <li><a href="目录/指令-STH-IDX.html">存半字索引 STH_IDX</a></li>
+          <li><a href="目录/指令-STB-IDX.html">存字节索引 STB_IDX</a></li>
+          <li><a href="目录/指令-MEMCOPY.html">内存拷贝 MEMCOPY</a></li>
+          <li><a href="目录/指令-CMPRANGE.html">立即数范围比较 CMPRANGE</a></li>
+          <li><a href="目录/指令-CMOV.html">条件移动 CMOV</a></li>
+          <li><a href="目录/指令-CMPMOV.html">比较并条件移动 CMPMOV</a></li>
+          </ul>
+        </details>
+      </li>
+      </ul>
+    </details>
+  </li>
+  <li>
+    <details>
+      <summary><a href="目录/关键字-如果.html">关键字</a></summary>
+      <ul>
+      <li><a href="目录/关键字-如果.html">如果(if)</a></li>
+      <li><a href="目录/关键字-否则.html">否则(else)</a></li>
+      <li><a href="目录/关键字-选择.html">选择(switch)</a></li>
+      <li><a href="目录/关键字-情况.html">情况(case)</a></li>
+      <li><a href="目录/关键字-默认.html">默认(default)</a></li>
+      <li><a href="目录/关键字-跳出.html">跳出(break)</a></li>
+      <li><a href="目录/关键字-继续.html">继续(continue)</a></li>
+      <li><a href="目录/关键字-循环.html">循环(for)</a></li>
+      <li><a href="目录/关键字-当.html">当(while)</a></li>
+      <li><a href="目录/关键字-遍历.html">遍历(foreach)</a></li>
+      <li><a href="目录/关键字-变量.html">变量(var)</a></li>
+      <li><a href="目录/关键字-结构.html">结构(struct)</a></li>
+      <li><a href="目录/关键字-枚举.html">枚举(enum)</a></li>
+      <li><a href="目录/关键字-测试输出.html">测试输出(debug)</a></li>
+      <li><a href="目录/关键字-输出.html">输出(print)</a></li>
+      <li><a href="目录/关键字-输出行.html">输出行(println)</a></li>
+      <li><a href="目录/关键字-拼接到.html">拼接到(concat)</a></li>
+      <li><a href="目录/关键字-包含.html">包含(import)</a></li>
+      <li><a href="目录/关键字-方法.html">方法(method)</a></li>
+      <li><a href="目录/关键字-静态.html">静态(static)</a></li>
+      <li><a href="目录/关键字-模块.html">模块(module)</a></li>
+      <li><a href="目录/关键字-私有.html">私有(private)</a></li>
+      <li><a href="目录/关键字-程序集.html">程序集(internal)</a></li>
+      <li><a href="目录/关键字-公共.html">公共(public)</a></li>
+      <li><a href="目录/关键字-出.html">出(result)</a></li>
+      <li><a href="目录/关键字-测试.html">测试(test)</a></li>
+      <li><a href="目录/关键字-断言.html">断言(assert)</a></li>
+      <li><a href="目录/关键字-返回.html">返回(return)</a></li>
+      <li><a href="目录/关键字-起始.html">起始(start)</a></li>
+      <li><a href="目录/关键字-数量.html">数量(count)</a></li>
+      <li><a href="目录/关键字-真.html">真(true)</a></li>
+      <li><a href="目录/关键字-假.html">假(false)</a></li>
+      </ul>
+    </details>
+  </li>
+  <li>
+    <details>
+      <summary><a href="目录/内建函数-存字.html">内建函数</a></summary>
+      <ul>
+      <li><a href="目录/内建函数-存字.html">存字(storeword)</a></li>
+      <li><a href="目录/内建函数-取字.html">取字(loadword)</a></li>
+      <li><a href="目录/内建函数-申请.html">申请(alloc)</a></li>
+      <li><a href="目录/内建函数-释放.html">释放(free)</a></li>
+      <li><a href="目录/内建函数-读取字符.html">读取字符(readchar)</a></li>
+      <li><a href="目录/内建函数-读取行.html">读取行(readline)</a></li>
+      <li><a href="目录/内建函数-读取数字.html">读取数字(readnum)</a></li>
+      <li><a href="目录/内建函数-读文件.html">读文件(readfile)</a></li>
+      <li><a href="目录/内建函数-写文件.html">写文件(writefile)</a></li>
+      <li><a href="目录/内建函数-当前时间.html">当前时间(now)</a></li>
+      <li><a href="目录/内建函数-当前毫秒.html">当前毫秒(nowms)</a></li>
+      <li><a href="目录/内建函数-追加写文件.html">追加写文件(appendfile)</a></li>
+      <li><a href="目录/内建函数-建目录.html">建目录(mkdir)</a></li>
+      <li><a href="目录/内建函数-删文件.html">删文件(deletefile)</a></li>
+      <li><a href="目录/内建函数-列目录.html">列目录(listdir)</a></li>
+      <li><a href="目录/内建函数-环境变量.html">环境变量(getenv)</a></li>
+      <li><a href="目录/内建函数-删目录.html">删目录(rmdir)</a></li>
+      <li><a href="目录/内建函数-移动到.html">移动到(moveto)</a></li>
+      <li><a href="目录/内建函数-复制到.html">复制到(copyto)</a></li>
+      <li><a href="目录/内建函数-运行进程.html">运行进程(runprocess)</a></li>
+      <li><a href="目录/内建函数-取退出码.html">取退出码(exitcode)</a></li>
+      <li><a href="目录/内建函数-读文件块.html">读文件块(readchunk)</a></li>
+      <li><a href="目录/内建函数-取网址.html">取网址(fetch)</a></li>
+      <li><a href="目录/内建函数-取网址状态码.html">取网址状态码(httpstatus)</a></li>
+      <li><a href="目录/内建函数-格式化.html">格式化(format)</a></li>
+      <li><a href="目录/内建函数-打开窗口.html">打开窗口(openwindow)</a></li>
+      <li><a href="目录/内建函数-关闭窗口.html">关闭窗口(closewindow)</a></li>
+      <li><a href="目录/内建函数-清屏.html">清屏(clearwindow)</a></li>
+      <li><a href="目录/内建函数-画文字.html">画文字(drawtext)</a></li>
+      <li><a href="目录/内建函数-画矩形.html">画矩形(drawrect)</a></li>
+      <li><a href="目录/内建函数-画线.html">画线(drawline)</a></li>
+      <li><a href="目录/内建函数-刷新.html">刷新(present)</a></li>
+      <li><a href="目录/内建函数-取事件.html">取事件(pollevent)</a></li>
+      <li><a href="目录/内建函数-等待.html">等待(sleep)</a></li>
+      <li><a href="目录/内建函数-取文字宽度.html">取文字宽度(textwidth)</a></li>
+      <li><a href="目录/内建函数-建位图.html">建位图(makebitmap)</a></li>
+      <li><a href="目录/内建函数-释放位图.html">释放位图(freebitmap)</a></li>
+      <li><a href="目录/内建函数-位图尺寸.html">位图尺寸(bitmapsize)</a></li>
+      <li><a href="目录/内建函数-画点到图.html">画点到图(putpixel)</a></li>
+      <li><a href="目录/内建函数-取图像素.html">取图像素(getpixel)</a></li>
+      <li><a href="目录/内建函数-贴位图.html">贴位图(blitbitmap)</a></li>
+      <li><a href="目录/内建函数-画线到图.html">画线到图(drawlineto)</a></li>
+      <li><a href="目录/内建函数-画矩形到图.html">画矩形到图(drawrectto)</a></li>
+      <li><a href="目录/内建函数-贴文字到位图.html">贴文字到位图(texttobitmap)</a></li>
+      <li><a href="目录/内建函数-间接调用.html">间接调用(invoke)</a></li>
+      <li><a href="目录/内建函数-打开读流.html">打开读流(openread)</a></li>
+      <li><a href="目录/内建函数-读一块.html">读一块(readblock)</a></li>
+      <li><a href="目录/内建函数-定位.html">定位(seek)</a></li>
+      <li><a href="目录/内建函数-关读流.html">关读流(closeread)</a></li>
+      <li><a href="目录/内建函数-打开写流.html">打开写流(openwrite)</a></li>
+      <li><a href="目录/内建函数-写一块.html">写一块(writeblock)</a></li>
+      <li><a href="目录/内建函数-关写流.html">关写流(closewrite)</a></li>
+      <li><a href="目录/内建函数-连到.html">连到(connectto)</a></li>
+      <li><a href="目录/内建函数-发送.html">发送(send)</a></li>
+      <li><a href="目录/内建函数-接收.html">接收(recv)</a></li>
+      <li><a href="目录/内建函数-关闭.html">关闭(close)</a></li>
+      <li><a href="目录/内建函数-监听.html">监听(listen)</a></li>
+      <li><a href="目录/内建函数-接受.html">接受(accept)</a></li>
+      <li><a href="目录/内建函数-主机解析.html">主机解析(resolve)</a></li>
+      <li><a href="目录/内建函数-发送块.html">发送块(sendblock)</a></li>
+      <li><a href="目录/内建函数-接收块.html">接收块(recvblock)</a></li>
+      <li><a href="目录/内建函数-睡眠.html">睡眠(sleepms)</a></li>
+      <li><a href="目录/内建函数-冲刷.html">冲刷(flush)</a></li>
+      <li><a href="目录/内建函数-改名.html">改名(renameto)</a></li>
+      <li><a href="目录/内建函数-临时目录.html">临时目录(tempdir)</a></li>
+      <li><a href="目录/内建函数-发起异步.html">发起异步(startasync)</a></li>
+      <li><a href="目录/内建函数-任务就绪.html">任务就绪(taskready)</a></li>
+      <li><a href="目录/内建函数-取消任务.html">取消任务(canceltask)</a></li>
+      <li><a href="目录/内建函数-取较大.html">取较大(maxof)</a></li>
+      <li><a href="目录/内建函数-取较小.html">取较小(minof)</a></li>
+      <li><a href="目录/内建函数-向下取整.html">向下取整(rounddown)</a></li>
+      <li><a href="目录/内建函数-搬符号.html">搬符号(copysign)</a></li>
+      <li><a href="目录/内建函数-数一位.html">数一位(popcount)</a></li>
+      <li><a href="目录/内建函数-前导零.html">前导零(leadingzeros)</a></li>
+      <li><a href="目录/内建函数-尾随零.html">尾随零(trailingzeros)</a></li>
+      <li><a href="目录/内建函数-循环左移.html">循环左移(rotateleft)</a></li>
+      <li><a href="目录/内建函数-循环右移.html">循环右移(rotateright)</a></li>
+      <li><a href="目录/内建函数-字节交换.html">字节交换(swapbytes)</a></li>
+      <li><a href="目录/内建函数-取字节.html">取字节(extractbyte)</a></li>
+      <li><a href="目录/内建函数-取整数绝对值.html">取整数绝对值(absint)</a></li>
+      <li><a href="目录/内建函数-双字乘高.html">双字乘高(mulhigh)</a></li>
+      <li><a href="目录/内建函数-双字乘加.html">双字乘加(muladdhigh)</a></li>
+      </ul>
+    </details>
+  </li>
+  <li>
+    <details>
+      <summary><a href="目录/方法-长度.html">方法</a></summary>
+      <ul>
+      <li><a href="目录/方法-长度.html">.长度()(length)</a></li>
+      <li><a href="目录/方法-清空.html">.清空()(clear)</a></li>
+      <li><a href="目录/方法-添加.html">.添加()(add)</a></li>
+      </ul>
+    </details>
+  </li>
+  <li>
+    <details>
+      <summary><a href="目录/类库-CSV-hb.html">类库</a></summary>
+      <ul>
+      <li><a href="目录/类库-CSV-hb.html">CSV.hb</a></li>
+      <li><a href="目录/类库-CSV流-hb.html">CSV流.hb</a></li>
+      <li><a href="目录/类库-HTML转义-hb.html">HTML转义.hb</a></li>
+      <li><a href="目录/类库-JSON-hb.html">JSON.hb</a></li>
+      <li><a href="目录/类库-Markdown-hb.html">Markdown.hb</a></li>
+      <li><a href="目录/类库-NDJSON流-hb.html">NDJSON流.hb</a></li>
+      <li><a href="目录/类库-RLE-hb.html">RLE.hb</a></li>
+      <li><a href="目录/类库-WebSocket-hb.html">WebSocket.hb</a></li>
+      <li><a href="目录/类库-float32-hb.html">float32.hb</a></li>
+      <li><a href="目录/类库-float64-hb.html">float64.hb</a></li>
+      <li><a href="目录/类库-int64-hb.html">int64.hb</a></li>
+      <li><a href="目录/类库-int64s-hb.html">int64s.hb</a></li>
+      <li><a href="目录/类库-map-hb.html">map.hb</a></li>
+      <li><a href="目录/类库-string-hb.html">string.hb</a></li>
+      <li><a href="目录/类库-三维数学-hb.html">三维数学.hb</a></li>
+      <li><a href="目录/类库-三维网格-hb.html">三维网格.hb</a></li>
+      <li><a href="目录/类库-中文-hb.html">中文.hb</a></li>
+      <li><a href="目录/类库-事件-hb.html">事件.hb</a></li>
+      <li><a href="目录/类库-优先队列-hb.html">优先队列.hb</a></li>
+      <li><a href="目录/类库-位-hb.html">位.hb</a></li>
+      <li><a href="目录/类库-位图-hb.html">位图.hb</a></li>
+      <li><a href="目录/类库-位集合-hb.html">位集合.hb</a></li>
+      <li><a href="目录/类库-内存-hb.html">内存.hb</a></li>
+      <li><a href="目录/类库-内存流-hb.html">内存流.hb</a></li>
+      <li><a href="目录/类库-几何-hb.html">几何.hb</a></li>
+      <li><a href="目录/类库-列表-hb.html">列表.hb</a></li>
+      <li><a href="目录/类库-剖析-hb.html">剖析.hb</a></li>
+      <li><a href="目录/类库-剪贴板-hb.html">剪贴板.hb</a></li>
+      <li><a href="目录/类库-十六进制转储-hb.html">十六进制转储.hb</a></li>
+      <li><a href="目录/类库-单位换算-hb.html">单位换算.hb</a></li>
+      <li><a href="目录/类库-同步-hb.html">同步.hb</a></li>
+      <li><a href="目录/类库-命令行选项-hb.html">命令行选项.hb</a></li>
+      <li><a href="目录/类库-唯一号-hb.html">唯一号.hb</a></li>
+      <li><a href="目录/类库-大数-hb.html">大数.hb</a></li>
+      <li><a href="目录/类库-大文件工具-hb.html">大文件工具.hb</a></li>
+      <li><a href="目录/类库-定时-hb.html">定时.hb</a></li>
+      <li><a href="目录/类库-定点-hb.html">定点.hb</a></li>
+      <li><a href="目录/类库-宽度-hb.html">宽度.hb</a></li>
+      <li><a href="目录/类库-并查集-hb.html">并查集.hb</a></li>
+      <li><a href="目录/类库-异步-hb.html">异步.hb</a></li>
+      <li><a href="目录/类库-弹窗-hb.html">弹窗.hb</a></li>
+      <li><a href="目录/类库-排序-hb.html">排序.hb</a></li>
+      <li><a href="目录/类库-控制台-hb.html">控制台.hb</a></li>
+      <li><a href="目录/类库-散列-hb.html">散列.hb</a></li>
+      <li><a href="目录/类库-数字-hb.html">数字.hb</a></li>
+      <li><a href="目录/类库-数学-hb.html">数学.hb</a></li>
+      <li><a href="目录/类库-数据表-hb.html">数据表.hb</a></li>
+      <li><a href="目录/类库-数组-hb.html">数组.hb</a></li>
+      <li><a href="目录/类库-文件-hb.html">文件.hb</a></li>
+      <li><a href="目录/类库-日志-hb.html">日志.hb</a></li>
+      <li><a href="目录/类库-时间-hb.html">时间.hb</a></li>
+      <li><a href="目录/类库-查找-hb.html">查找.hb</a></li>
+      <li><a href="目录/类库-栈-hb.html">栈.hb</a></li>
+      <li><a href="目录/类库-树-hb.html">树.hb</a></li>
+      <li><a href="目录/类库-校验和-hb.html">校验和.hb</a></li>
+      <li><a href="目录/类库-模型-hb.html">模型.hb</a></li>
+      <li><a href="目录/类库-流-hb.html">流.hb</a></li>
+      <li><a href="目录/类库-测试助手-hb.html">测试助手.hb</a></li>
+      <li><a href="目录/类库-消息-hb.html">消息.hb</a></li>
+      <li><a href="目录/类库-版本号-hb.html">版本号.hb</a></li>
+      <li><a href="目录/类库-状态机-hb.html">状态机.hb</a></li>
+      <li><a href="目录/类库-环境-hb.html">环境.hb</a></li>
+      <li><a href="目录/类库-界面-hb.html">界面.hb</a></li>
+      <li><a href="目录/类库-目录-hb.html">目录.hb</a></li>
+      <li><a href="目录/类库-矩阵-hb.html">矩阵.hb</a></li>
+      <li><a href="目录/类库-素体-hb.html">素体.hb</a></li>
+      <li><a href="目录/类库-统计-hb.html">统计.hb</a></li>
+      <li><a href="目录/类库-缓冲-hb.html">缓冲.hb</a></li>
+      <li><a href="目录/类库-编码-hb.html">编码.hb</a></li>
+      <li><a href="目录/类库-网络-hb.html">网络.hb</a></li>
+      <li><a href="目录/类库-网页-hb.html">网页.hb</a></li>
+      <li><a href="目录/类库-表达式-hb.html">表达式.hb</a></li>
+      <li><a href="目录/类库-迭代器-hb.html">迭代器.hb</a></li>
+      <li><a href="目录/类库-通配-hb.html">通配.hb</a></li>
+      <li><a href="目录/类库-配置-hb.html">配置.hb</a></li>
+      <li><a href="目录/类库-链表-hb.html">链表.hb</a></li>
+      <li><a href="目录/类库-错误-hb.html">错误.hb</a></li>
+      <li><a href="目录/类库-队列-hb.html">队列.hb</a></li>
+      <li><a href="目录/类库-随机-hb.html">随机.hb</a></li>
+      <li><a href="目录/类库-页面调试-hb.html">页面调试.hb</a></li>
+      </ul>
+    </details>
+  </li>
+</ul>
+</nav>
+<header class="横条">
+<a class="横条首页" href="index.html">总目录</a>
+<a href="索引-介绍.html">介绍</a>
+<a href="索引-上手.html">上手</a>
+<a href="索引-语言细节.html">语言细节</a>
+<a href="索引-硬上限.html">硬上限</a>
+<a href="索引-类型.html">类型</a>
+<a href="索引-指令.html">指令</a>
+<a href="索引-关键字.html">关键字</a>
+<a href="索引-内建函数.html">内建函数</a>
+<a href="索引-方法.html">方法</a>
+<a href="索引-类库.html">类库</a>
+</header>
+<main class="内容区">
+<article>
+<nav class="面包屑"><a href="index.html">帮助总目录</a> <span>›</span> <span>内建函数</span></nav>
+<h1 class="页标题">内建函数</h1>
+<p class="导语">语言级内建函数逐条(和 `申请` / `读取行` 同一档)。</p>
+<p>语言级内建函数(不是关键字,和 <code>申请</code> / <code>读取行</code> 同一档);中英可整体切换;共 82 条。</p>
+<table class="索引表">
+<thead><tr><th>条目</th><th>说明</th></tr></thead>
+<tbody>
+<tr><td><a href="目录/内建函数-存字.html">存字(storeword)</a></td><td>存字(地址, 偏移, 值) - 往堆块的某个偏移写一个字(4 字节)。与汇编指令 <code>存字</code> 同名:带括号的 <code>存字(…)</code> 是<strong>堆写</strong>,指令那种 <code>存字 R1, _v1</code> 才是汇编;中英切…</td></tr>
+<tr><td><a href="目录/内建函数-取字.html">取字(loadword)</a></td><td>取字(地址, 偏移) - 从堆块的某个偏移读一个字(4 字节)。与汇编指令 <code>取字</code> 同名,按有没有括号分(同上)</td></tr>
+<tr><td><a href="目录/内建函数-申请.html">申请(alloc)</a></td><td>申请(字节数) → 地址 - 从堆上要一块(默认 64KB,工程文件里 <code>堆</code> 可配;与字符串/列表的池分开)。申请不到(堆里没有足够大的一块)就<strong>当场停下</strong>:报错带行号、写清这次要多少字…</td></tr>
+<tr><td><a href="目录/内建函数-释放.html">释放(free)</a></td><td>释放(地址); - 把 <code>申请</code> 拿到的块还回堆。不是块首 / 已经释放过都会当场报错停下(报错时堆本身没有被改动);释放后再 <code>取字</code>/<code>存字</code> 也会被拦住。英文别名 <code>free</code></td></tr>
+<tr><td><a href="目录/内建函数-读取字符.html">读取字符(readchar)</a></td><td>读取字符() → 整数 - 从标准输入读一个字符(读到末尾给 -1;接它的变量用 <code>var</code>,-1 存进 <code>字符</code> 会被截成 255)。英文别名 <code>readchar</code></td></tr>
+<tr><td><a href="目录/内建函数-读取行.html">读取行(readline)</a></td><td>读取行(缓冲) → 整数 - 读一整行(不含换行)。缓冲可以是 <code>字符</code>/<code>字节</code> 的数组、列表,或一个 <code>字符串</code> 变量(字符串装不下会自己 ×2 长大);<strong>返回读到的字节数</strong>(0 = …</td></tr>
+<tr><td><a href="目录/内建函数-读取数字.html">读取数字(readnum)</a></td><td>读取数字() → 整数 - 从标准输入读一个十进制整数(读到非数字就报错停下,报错带行号与改法)。英文别名 <code>readnum</code></td></tr>
+<tr><td><a href="目录/内建函数-读文件.html">读文件(readfile)</a></td><td>读文件(路径, 内容变量, 上限) → 逻辑 - 把文件内容读进那个 <code>字符串</code> 变量(上限是编译期数字;装不下会自动从池里换大块);成功给 真。英文别名 <code>readfile</code></td></tr>
+<tr><td><a href="目录/内建函数-写文件.html">写文件(writefile)</a></td><td>写文件(路径, 内容) → 逻辑 - <strong>覆盖写</strong>(文件不存在就新建,缺的目录顺手建出来);成功给 真。英文别名 <code>writefile</code></td></tr>
+<tr><td><a href="目录/内建函数-当前时间.html">当前时间(now)</a></td><td>当前时间() → 整数 - 当前时间(自 1970-01-01 UTC 起的秒数)。英文别名 <code>now</code></td></tr>
+<tr><td><a href="目录/内建函数-当前毫秒.html">当前毫秒(nowms)</a></td><td>当前毫秒() → 整数 - <strong>单调时钟</strong>的毫秒刻度(不受用户改系统时间影响,只增不减)。给定时器库与界面主循环算节拍用:要算&quot;过了多久&quot;就存一份、后面拿现在这份去减。**低 32 位、约 …</td></tr>
+<tr><td><a href="目录/内建函数-追加写文件.html">追加写文件(appendfile)</a></td><td>追加写文件(路径, 内容) → 逻辑 - 把内容<strong>接在文件末尾</strong>(文件不存在就新建);成功给 真。英文别名 <code>appendfile</code></td></tr>
+<tr><td><a href="目录/内建函数-建目录.html">建目录(mkdir)</a></td><td>建目录(路径) → 逻辑 - 建目录(<strong>已存在也算成功</strong>,同一段程序能重复跑);失败给 假。英文别名 <code>mkdir</code></td></tr>
+<tr><td><a href="目录/内建函数-删文件.html">删文件(deletefile)</a></td><td>删文件(路径) → 逻辑 - 删文件(文件不存在给 假,不静默当成功)。英文别名 <code>deletefile</code></td></tr>
+<tr><td><a href="目录/内建函数-列目录.html">列目录(listdir)</a></td><td>列目录(路径, 内容变量, 上限) → 逻辑 - 目录里的<strong>名字</strong>按行写进那个 <code>字符串</code> 变量(只列本层、不递归、按名字排序);目录不存在给 假。英文别名 <code>listdir</code></td></tr>
+<tr><td><a href="目录/内建函数-环境变量.html">环境变量(getenv)</a></td><td>环境变量(名字, 内容变量, 上限) → 逻辑 - 读环境变量的值进那个 <code>字符串</code> 变量(没有这个变量给 假)。英文别名 <code>getenv</code></td></tr>
+<tr><td><a href="目录/内建函数-删目录.html">删目录(rmdir)</a></td><td>删目录(路径) → 逻辑 - <strong>只删空目录</strong>:目录里还有东西给 假(递归删是个一键删光的口子,故意不提供;要清就先 <code>列目录</code> 自己逐个删);目录不存在也给 假。英文别名 <code>rmdir</code></td></tr>
+<tr><td><a href="目录/内建函数-移动到.html">移动到(moveto)</a></td><td>移动到(旧路径, 新路径) → 逻辑 - 文件或<strong>整个目录</strong>换个位置:<strong>目标已存在给 假(不覆盖)</strong>;新路径上缺的目录会顺手建出来;旧路径不存在给 假。英文别名 <code>moveto</code></td></tr>
+<tr><td><a href="目录/内建函数-复制到.html">复制到(copyto)</a></td><td>复制到(源路径, 目标路径) → 逻辑 - 复制文件(照抄内容)或<strong>整棵目录</strong>:<strong>目标已存在给 假(不合并、不覆盖)</strong>;源不存在给 假。英文别名 <code>copyto</code>(注意:汇编指令里的 …</td></tr>
+<tr><td><a href="目录/内建函数-运行进程.html">运行进程(runprocess)</a></td><td>运行进程(名字, 参数, 输出变量, 超时毫秒) → 逻辑 - <strong>起一个子进程并等它跑完</strong>:<code>名字</code> 必须是<strong>工程文件 <code>.hbp</code> 的 <code>可执行文件</code> 表里声明过的键</strong>(给不了路径、…</td></tr>
+<tr><td><a href="目录/内建函数-取退出码.html">取退出码(exitcode)</a></td><td>取退出码() → 整数 - 上一次 <code>运行进程</code> 的退出码(还没跑过、起不来、超时被杀都给 0xFFFFFFFF)。英文别名 <code>exitcode</code></td></tr>
+<tr><td><a href="目录/内建函数-读文件块.html">读文件块(readchunk)</a></td><td>读文件块(路径, 偏移, 内容变量, 上限) → 逻辑 - 从第 <code>偏移</code> 字节起读<strong>一块</strong>(最多 <code>上限</code> 字节,编译期数字):读到了给 真、内容进那个 <code>字符串</code> 变量;**读到文件末…</td></tr>
+<tr><td><a href="目录/内建函数-取网址.html">取网址(fetch)</a></td><td>取网址(网址, 内容变量, 上限, 超时毫秒) → 逻辑 - <strong>同步 GET 一次</strong>:<code>网址</code> 要写全(<code>http://主机:端口/路径</code>),而且**主机 + 端口必须在工程文件 `.hb…</td></tr>
+<tr><td><a href="目录/内建函数-取网址状态码.html">取网址状态码(httpstatus)</a></td><td>取网址状态码() → 整数 - 上一次 <code>取网址</code> 的 HTTP 状态码(还没取过、连不上、超时都给 0xFFFFFFFF,与 <code>取退出码()</code> 一个口径)。英文别名 <code>httpstatus</code></td></tr>
+<tr><td><a href="目录/内建函数-格式化.html">格式化(format)</a></td><td>格式化(&quot;坐标 {0},{1}&quot;, x, y) → 字符串 - <strong>编译期</strong>把格式串拆成&quot;字面段 + 占位符&quot;,逐个值按类型转成文字(字符串原样 / 文字一个码点 / 逻辑 真·假 / 数字…</td></tr>
+<tr><td><a href="目录/内建函数-打开窗口.html">打开窗口(openwindow)</a></td><td>打开窗口(标题, 宽, 高) → 逻辑 - 开一个窗口(<strong>同时只支持一个窗口</strong>)。已经开着再开会给 假;宿主没挂图形能力(独立 exe 没带壳 / 手机端 / 这一段机器码在 WPF ID…</td></tr>
+<tr><td><a href="目录/内建函数-关闭窗口.html">关闭窗口(closewindow)</a></td><td>关闭窗口() - 关掉窗口,<strong>程序继续跑</strong>(不结束进程)。<strong>没有返回值</strong>(单独成句写)。英文别名 <code>closewindow</code></td></tr>
+<tr><td><a href="目录/内建函数-清屏.html">清屏(clearwindow)</a></td><td>清屏(颜色) - 用这个颜色铺满整窗(32 位颜色值,例如 0xFF101018)。<strong>没有返回值</strong>:它是<strong>一句命令</strong>,单独成句写(<code>清屏(0xFF101018);</code>)。没开窗口就白画(…</td></tr>
+<tr><td><a href="目录/内建函数-画文字.html">画文字(drawtext)</a></td><td>画文字(x, y, 文本, 颜色) - <strong>等宽单行</strong>,超出窗口自动裁掉(不报错);中文按 2 格宽排(与 <code>取文字宽度</code> 一个口径)。<strong>没有返回值</strong>(单独成句写)。英文别名 `draw…</td></tr>
+<tr><td><a href="目录/内建函数-画矩形.html">画矩形(drawrect)</a></td><td>画矩形(x, y, 宽, 高, 颜色) - 填充矩形(描边以后再加)。<strong>没有返回值</strong>(单独成句写)。英文别名 <code>drawrect</code></td></tr>
+<tr><td><a href="目录/内建函数-画线.html">画线(drawline)</a></td><td>画线(x1, y1, x2, y2, 颜色) - 从 (x1,y1) 画到 (x2,y2)。<strong>没有返回值</strong>(单独成句写)。英文别名 <code>drawline</code></td></tr>
+<tr><td><a href="目录/内建函数-刷新.html">刷新(present)</a></td><td>刷新() - 把<strong>这一帧</strong>攒下的绘制命令整批提交上去;<strong>不调用就一直不显示</strong>。<strong>没有返回值</strong>(单独成句写)。<code>hbcc --run</code> 是无头:每条命令按同一份格式<strong>逐条打出来</strong>…</td></tr>
+<tr><td><a href="目录/内建函数-取事件.html">取事件(pollevent)</a></td><td>取事件(类型, 键码, x, y) → 逻辑 - <strong>轮询</strong>一个事件:有就给 真(四个变量被写满),没有就给 假(<strong>不阻塞</strong>)。也能把函数当参数传(见帮助《第29节·回调》),但事件本身…</td></tr>
+<tr><td><a href="目录/内建函数-等待.html">等待(sleep)</a></td><td>等待(毫秒) - 让出一帧,别把 CPU 烧满(即时模式的主循环里每帧调一次)。<strong>没有返回值</strong>(单独成句写);<strong>无头呈现不真等</strong>(自检与 <code>--run</code> 要的是确定与快)。英文别名 `…</td></tr>
+<tr><td><a href="目录/内建函数-取文字宽度.html">取文字宽度(textwidth)</a></td><td>取文字宽度(文本) → 整数 - 排版用(等宽口径:ASCII 1 格、汉字 2 格);它<strong>是纯计算</strong>,没开窗 / 没挂图形能力也照样给数。英文别名 <code>textwidth</code></td></tr>
+<tr><td><a href="目录/内建函数-建位图.html">建位图(makebitmap)</a></td><td>建位图(宽, 高, 句柄变量) → 逻辑 - 建一张<strong>离屏</strong>图;句柄<strong>写回第三个参数那个整数变量</strong>(建不出写 -1:宽高非法 / 超过上限)。图在<strong>宿主侧</strong>,不占那 1MB 运行内…</td></tr>
+<tr><td><a href="目录/内建函数-释放位图.html">释放位图(freebitmap)</a></td><td>释放位图(句柄) → 逻辑 - 还给宿主;同一个号再释放一次给 假(旧号当场作废)。英文别名 <code>freebitmap</code></td></tr>
+<tr><td><a href="目录/内建函数-位图尺寸.html">位图尺寸(bitmapsize)</a></td><td>位图尺寸(句柄, 宽变量, 高变量) → 逻辑 - 问大小;句柄不认给 假。两个出参要写<strong>变量名</strong>。英文别名 <code>bitmapsize</code></td></tr>
+<tr><td><a href="目录/内建函数-画点到图.html">画点到图(putpixel)</a></td><td>画点到图(句柄, x, y, 颜色) → 逻辑 - 离屏画一个像素;<strong>越界什么都不做</strong>(不报错)。英文别名 <code>putpixel</code></td></tr>
+<tr><td><a href="目录/内建函数-取图像素.html">取图像素(getpixel)</a></td><td>取图像素(句柄, x, y) → 整数 - 读一个像素(<code>0xAARRGGBB</code>);<strong>坐标越界给 0</strong>。⚠ <strong>句柄不认</strong>那一档那一格的值不做承诺(要判『图还在不在』先用 <code>位图尺寸</code>)…</td></tr>
+<tr><td><a href="目录/内建函数-贴位图.html">贴位图(blitbitmap)</a></td><td>贴位图(句柄, x, y) → 逻辑 - 把整张图<strong>一次</strong>贴到窗口那个位置;这一条就是『帧数不再随画了多少东西涨』的那个出口(<strong>一条命令贴一整块</strong>,不是几万条画矩形)。要开过窗。英文别…</td></tr>
+<tr><td><a href="目录/内建函数-画线到图.html">画线到图(drawlineto)</a></td><td>画线到图(句柄, x1, y1, x2, y2, 颜色) → 逻辑 - 与 <code>画线</code> 同口径,画到<strong>离屏</strong>;<strong>一条命令画一整条线</strong>(不是逐个像素画)。英文别名 <code>drawlineto</code></td></tr>
+<tr><td><a href="目录/内建函数-画矩形到图.html">画矩形到图(drawrectto)</a></td><td>画矩形到图(句柄, x, y, 宽, 高, 颜色) → 逻辑 - 实心矩形,画到<strong>离屏</strong>(宽高 ≤ 0 什么都不做)。英文别名 <code>drawrectto</code></td></tr>
+<tr><td><a href="目录/内建函数-贴文字到位图.html">贴文字到位图(texttobitmap)</a></td><td>贴文字到位图(句柄, x, y, 文本, 颜色) → 逻辑 - 把一行字<strong>画进这张图</strong>(控 1-①,号 78)。⚠ 这一条<strong>要呈现口</strong>(字形光栅化只有平台有):无头那一档 / 没挂呈现…</td></tr>
+<tr><td><a href="目录/内建函数-间接调用.html">间接调用(invoke)</a></td><td>间接调用(回调变量, 实参…) - <strong>调的那个函数是算出来的</strong>(回调 / 事件的地基)。第一个实参是<strong>装代码地址的回调变量</strong>(声明写成 <code>回调 名字 = 地址(函数名);</code>),后面才是…</td></tr>
+<tr><td><a href="目录/内建函数-打开读流.html">打开读流(openread)</a></td><td>打开读流(路径, 句柄) → 整数 - 开一条<strong>读流</strong>:句柄收进那个 <code>整数</code> 变量(用不了给 -1)。<strong>文件必须已经存在</strong>;开着的时候别人只能读(写流同时开两份会互相踩)。开了就得 …</td></tr>
+<tr><td><a href="目录/内建函数-读一块.html">读一块(readblock)</a></td><td>读一块(句柄, 块, 上限) → 整数 - 从读流里读<strong>一块</strong>(最多 <code>上限</code> 字节,编译期数字,1~1048576):<strong>返回真读到的字节数</strong>(0 = 已经到末尾,这时那个 <code>字符串</code>…</td></tr>
+<tr><td><a href="目录/内建函数-定位.html">定位(seek)</a></td><td>定位(句柄, 偏移) → 整数 - 把流挪到<strong>从文件开头算</strong>的第 <code>偏移</code> 个字节(0 = 成功;22 = 句柄不对 / 已经关上;4 = 读写失败;9 = 偏移不合法)。读流 / 写流都…</td></tr>
+<tr><td><a href="目录/内建函数-关读流.html">关读流(closeread)</a></td><td>关读流(句柄) → 整数 - 关掉一条读流(0 = 成功)。关掉之后那个句柄一律作废(再拿它读给 -1 / 状态 22)。英文别名 <code>closeread</code></td></tr>
+<tr><td><a href="目录/内建函数-打开写流.html">打开写流(openwrite)</a></td><td>打开写流(路径, 句柄) → 整数 - 开一条<strong>写流</strong>:句柄收进那个 <code>整数</code> 变量(用不了给 -1)。<strong>文件不存在就新建、已存在就从头写起</strong>(要接着写就用 <code>追加写文件</code>);路径上缺…</td></tr>
+<tr><td><a href="目录/内建函数-写一块.html">写一块(writeblock)</a></td><td>写一块(句柄, 内容, 字节数) → 整数 - 往写流里写一块(内容是一个 <code>字符串</code>:变量 / 字面量 / <code>字符 缓冲[16]</code> 都行,缓冲按头一个 0 字节之前算长度);**返回真写下去…</td></tr>
+<tr><td><a href="目录/内建函数-关写流.html">关写流(closewrite)</a></td><td>关写流(句柄) → 整数 - 关掉一条写流(0 = 成功),<strong>它先把缓冲冲刷到盘上</strong>再关。写完不关就出事:程序退出时缓冲可能还没下去(内容少一截)。关掉之后那个句柄一律作废。英文别名 `c…</td></tr>
+<tr><td><a href="目录/内建函数-连到.html">连到(connectto)</a></td><td>连到(主机, 端口, 句柄) → 整数 - 连一台主机(<strong>同步</strong>,连上或失败才返回):句柄收进那个 <code>整数</code> 变量(失败给 -1)。<code>主机</code> 是主机名或 IP;<code>端口</code> 1~65535。*…</td></tr>
+<tr><td><a href="目录/内建函数-发送.html">发送(send)</a></td><td>发送(句柄, 数据) → 整数 - 往连接上发一段字节(<strong>返回真发出去的字节数</strong>,-1 = 句柄不对之类)。<code>数据</code> 是一个 <code>字符串</code>:变量 / 字面量 / <code>字符 缓冲[16]</code> 都行…</td></tr>
+<tr><td><a href="目录/内建函数-接收.html">接收(recv)</a></td><td>接收(句柄, 数据变量, 上限) → 整数 - 从连接上收<strong>一块</strong>(最多 <code>上限</code> 字节,编译期数字,1~1048576):返回<strong>收到的字节数</strong>;<strong>0 = 对端关掉了</strong>(这时数据变…</td></tr>
+<tr><td><a href="目录/内建函数-关闭.html">关闭(close)</a></td><td>关闭(句柄) → 整数 - 关掉一条连接<strong>或</strong>一个监听(0 = 成功;句柄不对给状态 22)。关掉之后那个句柄一律作废(再拿它收发给 -1)。英文别名 <code>close</code></td></tr>
+<tr><td><a href="目录/内建函数-监听.html">监听(listen)</a></td><td>监听(网卡地址, 端口, 句柄) → 整数 - 绑一块网卡 + 一个端口,等着别人来连:句柄收进那个 <code>整数</code> 变量(失败给 -1)。<code>网卡地址</code> 要写 <strong>IP</strong>(<code>127.0.0.1</code> …</td></tr>
+<tr><td><a href="目录/内建函数-接受.html">接受(accept)</a></td><td>接受(监听句柄, 句柄) → 整数 - 从监听句柄上收<strong>一个新连接</strong>:新连接的句柄收进那个 <code>整数</code> 变量(失败给 -1)。<strong>同步阻塞</strong>:没人来就一直等(要&quot;等多久&quot;是以后异步那一档的…</td></tr>
+<tr><td><a href="目录/内建函数-主机解析.html">主机解析(resolve)</a></td><td>主机解析(主机, 地址变量) → 逻辑 - 把一个主机名解析成地址:<strong>第一个解析出来的地址</strong>(优先 IPv4)写进那个 <code>字符串</code> 变量,给 真;解析不了给 假(变量清空)。主机也得先在 …</td></tr>
+<tr><td><a href="目录/内建函数-发送块.html">发送块(sendblock)</a></td><td>发送块(句柄, 块地址, 字节数) → 整数 - 与 <code>发送</code> 同一条路,差别只有两点:<strong>数据从哪来</strong>(<code>块地址</code> = <code>申请</code> 回来的那块内存)、<strong>发多少是显式给的</strong>(数字或变量,*…</td></tr>
+<tr><td><a href="目录/内建函数-接收块.html">接收块(recvblock)</a></td><td>接收块(句柄, 块地址, 容量) → 整数 - 与 <code>接收</code> 同一条路,差别只有<strong>往哪写</strong>:<strong>原始字节</strong>直接进 <code>块地址</code>(<code>申请</code> 回来的那块内存),按 <code>容量</code> 封顶,**不碰字符…</td></tr>
+<tr><td><a href="目录/内建函数-睡眠.html">睡眠(sleepms)</a></td><td>睡眠(毫秒) → 整数 - <strong>睡满这些毫秒再往下走</strong>(0 = 睡满;负数不睡、给状态 9)。它<strong>会把程序停在那儿</strong>,界面程序请用 <code>等待(毫秒)</code>(让出一帧)或定时器库 - 拿它睡界面…</td></tr>
+<tr><td><a href="目录/内建函数-冲刷.html">冲刷(flush)</a></td><td>冲刷(句柄) → 整数 - 把一条<strong>写流</strong>的缓冲落盘(0 = 成功;流<strong>还开着</strong>,后头接着 <code>写一块</code> 就行)。与 <code>关写流</code> 的差别:那一条是&quot;冲刷完顺手关掉&quot;,这一条不关。只认写流…</td></tr>
+<tr><td><a href="目录/内建函数-改名.html">改名(renameto)</a></td><td>改名(旧路径, 新路径) → 逻辑 - 文件 / 整个目录<strong>换个名字或位置</strong>,而且<strong>目标已存在就整体替换</strong>(文件在同一卷上是一个<strong>原子替换</strong> - 安全保存就是&quot;先写临时文件,再一次…</td></tr>
+<tr><td><a href="目录/内建函数-临时目录.html">临时目录(tempdir)</a></td><td>临时目录(目录变量, 上限) → 逻辑 - 把本机的<strong>临时目录</strong>写进那个 <code>字符串</code> 变量(拿到给 真;路径<strong>尾部不带分隔符</strong>)。<code>上限</code> 是编译期数字(1~1048576)。中间结果…</td></tr>
+<tr><td><a href="目录/内建函数-发起异步.html">发起异步(startasync)</a></td><td>发起异步(种类, 参数一, 参数二, 参数三, 任务) → 整数 - 把一件活交给宿主后台线程去干,<strong>立刻</strong>返回任务号(排不上给 -1);<code>种类</code> 写 <strong>1 = 读文件</strong> / **2 …</td></tr>
+<tr><td><a href="目录/内建函数-任务就绪.html">任务就绪(taskready)</a></td><td>任务就绪(任务号, 状态, 字节数) → 整数 - 问一句&quot;那一趟好了没有&quot;,好了就把结果搬回来:<strong>返回值</strong> = <code>0</code> 还没好 · <code>1</code> 好了 · <code>2</code> 这一趟失败 · <code>3</code> 任务…</td></tr>
+<tr><td><a href="目录/内建函数-取消任务.html">取消任务(canceltask)</a></td><td>取消任务(任务号) → 整数 - 不再等这一趟(0 = 取消成功;3 = 这个号已经作废;22 = 号不成形)。<strong>尽力而为</strong>:已经在跑的那一趟拦不住(它跑完自己把格子还回来),但结果**不…</td></tr>
+<tr><td><a href="目录/内建函数-取较大.html">取较大(maxof)</a></td><td>取较大(左, 右) → 浮点 - 两个里较大的那个(<strong>浮点</strong>)。有一边是<strong>非数</strong>就给非数(与 .NET 的 MathF.Max 同一口径,不是 C 的 fmaxf 那种“给另一边”);…</td></tr>
+<tr><td><a href="目录/内建函数-取较小.html">取较小(minof)</a></td><td>取较小(左, 右) → 浮点 - 两个里较小的那个;非数同上。</td></tr>
+<tr><td><a href="目录/内建函数-向下取整.html">向下取整(rounddown)</a></td><td>向下取整(值) → 浮点 - 朝 <strong>−∞</strong> 取整(<code>2.5 → 2</code>;<code>-2.5 → -3</code>);<code>-0</code> 保持自己的符号;<code>±∞</code> 与 <code>非数</code> 原样返回。要“朝零截断”用 <code>整数(值)</code>…</td></tr>
+<tr><td><a href="目录/内建函数-搬符号.html">搬符号(copysign)</a></td><td>搬符号(值, 号源) → 浮点 - 取 <code>值</code> 的大小、配上 <code>号源</code> 的符号位(<strong>按位</strong>,连 <code>-0</code> 与非数的符号位也照搬):<code>搬符号(1.0, -2.0)</code> 得 <code>-1.0</code>。</td></tr>
+<tr><td><a href="目录/内建函数-数一位.html">数一位(popcount)</a></td><td>数一位(值) → 整数 - 这 32 位里有几个 1(<code>0</code> 给 0);<strong>对 32 位整体算</strong>,与 <code>位.数一位</code> 同一个口径。</td></tr>
+<tr><td><a href="目录/内建函数-前导零.html">前导零(leadingzeros)</a></td><td>前导零(值) → 整数 - 最高位那个 1 之前有几个 0(<code>0</code> 给 32)。</td></tr>
+<tr><td><a href="目录/内建函数-尾随零.html">尾随零(trailingzeros)</a></td><td>尾随零(值) → 整数 - 最低位那个 1 之后有几个 0(<code>0</code> 给 32)。</td></tr>
+<tr><td><a href="目录/内建函数-循环左移.html">循环左移(rotateleft)</a></td><td>循环左移(值, 位数) → 无符号 - 移出去的位从另一头绕回来;<strong>移位数取低 5 位</strong>(<code>位数</code> 是 40 就等于移 8,负数按补码取低 5 位)⇒ 与 <code>位数 % 32</code> 等价。</td></tr>
+<tr><td><a href="目录/内建函数-循环右移.html">循环右移(rotateright)</a></td><td>循环右移(值, 位数) → 无符号 - 同上,往右绕。</td></tr>
+<tr><td><a href="目录/内建函数-字节交换.html">字节交换(swapbytes)</a></td><td>字节交换(值) → 无符号 - 4 个字节整个反过来(小端 ↔ 大端):<code>0x12345678 → 0x78563412</code>。</td></tr>
+<tr><td><a href="目录/内建函数-取字节.html">取字节(extractbyte)</a></td><td>取字节(值, 第几段) → 整数 - 取第 n 个字节(<code>(值 &gt;&gt; 8n) &amp; 0xFF</code>,n 从 <strong>0</strong> 起);<strong>第二个参数只认 0~3 的常量</strong>(要拿运行期下标取字节,写 `(值…</td></tr>
+<tr><td><a href="目录/内建函数-取整数绝对值.html">取整数绝对值(absint)</a></td><td>取整数绝对值(值) → 整数 - <code>|值|</code>,把这 32 位按<strong>有符号</strong>读;<strong><code>-2147483648</code> 回绕成它自己</strong>(不报错)。</td></tr>
+<tr><td><a href="目录/内建函数-双字乘高.html">双字乘高(mulhigh)</a></td><td>双字乘高(左, 右) → 无符号 - 两个数当<strong>无符号 32 位</strong>相乘,取 64 位积的<strong>高 32 位</strong>(<code>0x80000000 × 0x80000000</code> 得 0);大数 / 哈希那…</td></tr>
+<tr><td><a href="目录/内建函数-双字乘加.html">双字乘加(muladdhigh)</a></td><td>双字乘加(左, 右) → 无符号 - <code>((左 × 右) + 右)</code> 的<strong>高 32 位</strong>(无符号 64 位算);一条顶“乘高 + 加 + 再取高”。</td></tr>
+</tbody>
+</table>
+<p class="页脚注">共 82 条。</p>
+</article>
+</main>
+</body>
+</html>

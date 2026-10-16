@@ -1,0 +1,8 @@
+<Solution>
+  <Project Path="hehshihbeen-compiler.csproj" />
+  <Project Path="引擎库\引擎库.csproj" />
+  <Project Path="编译器CLI\编译器CLI.csproj" />
+  <Project Path="HB宿主\HB宿主.csproj" />
+  <Project Path="图形宿主\图形宿主.csproj" />
+  <Project Path="MobileIDE\MobileIDE.csproj" />
+</Solution>

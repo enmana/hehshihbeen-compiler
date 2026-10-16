@@ -1,0 +1,43 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!--
+    R1-6 批 1:**图形宿主**(桌面三平台的壳)。
+    分工:能力层(`引擎\图形宿主C.cs`,纯 C#、零 UI 依赖)管"攒命令 + 收事件";
+    这个项目只回答"画在哪儿":用 Avalonia 12.1.1 开一个真窗口,拿它自带的 Skia 当画布。
+    用户 2026-09-22 定案:路线甲(即时模式自绘,控件由 HB 自己写)、壳 Avalonia 12.1.1(本机 NuGet 缓存整套已有,离线可还原)。
+    `HB宿主` 引用它(机器码里用到图形能力才把壳挂上,见 HB宿主 的 Program.cs);
+    自检与命令行(hbcc 跑程序)走**无头呈现**(逐条 dump),一条 UI 依赖都不沾。
+  -->
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <RootNamespace>hehshihbeen_compiler.图形宿主</RootNamespace>
+    <AssemblyName>图形宿主</AssemblyName>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Avalonia" Version="12.1.1" />
+    <PackageReference Include="Avalonia.Desktop" Version="12.1.1" />
+    <PackageReference Include="Avalonia.Themes.Fluent" Version="12.1.1" />
+    <PackageReference Include="Avalonia.Fonts.Inter" Version="12.1.1" />
+  </ItemGroup>
+
+  <!-- 能力层跟着这个项目一起编(壳要用它的 呈现口 / 命令类型) ——
+       这是个**独立小工程**,不引用 引擎库,所以新加的能力层文件要在这儿一并列上:
+       R1-6 批 2 加了 `引擎\图形事件C.cs`(事件类型 / 键码表 / 事件脚本)与它要用的
+       `引擎\运行期错误C.cs`(帧数护栏要抛它),漏一个这个端就编不过(六端闸门当场抓到)。
+       T26(2026-09-27):这份 `运行期错误C.cs` 现在是**全仓唯一的一份定义** ——
+       HB宿主 不再自编一份,它经 ProjectReference 直接吃这里的(CS0436 因此清零)。 -->
+  <ItemGroup>
+    <Compile Include="..\引擎\图形宿主C.cs" Link="引擎\图形宿主C.cs" />
+    <Compile Include="..\引擎\图形事件C.cs" Link="引擎\图形事件C.cs" />
+    <Compile Include="..\引擎\运行期错误C.cs" Link="引擎\运行期错误C.cs" />
+    <!-- 第405批(2026-10-11):R4-12 位图那一批新加的 `位图仓C` 当时漏了这一行 ⇒
+         这个端一直编不过(`CS0103: 位图仓C`),六端构建闸门抓到。新加能力层文件时记得回这儿加一行。 -->
+    <Compile Include="..\引擎\位图仓C.cs" Link="引擎\位图仓C.cs" />
+  </ItemGroup>
+
+</Project>

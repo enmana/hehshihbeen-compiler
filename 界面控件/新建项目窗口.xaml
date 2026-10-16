@@ -1,0 +1,37 @@
+<Window x:Class="hehshihbeen_compiler.新建项目窗口"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="新建项目" Width="520" SizeToContent="Height" ResizeMode="NoResize"
+        WindowStartupLocation="CenterOwner" ShowInTaskbar="False"
+        FontFamily="Microsoft YaHei UI" FontSize="13">
+    <StackPanel Margin="18">
+        <TextBlock Text="会建出这样一个目录:" Opacity="0.8"/>
+        <Border Margin="0,6,0,10" Padding="8" BorderThickness="1" CornerRadius="3">
+            <TextBlock FontFamily="Consolas, Microsoft YaHei UI" x:Name="目录预览"/>
+        </Border>
+
+        <TextBlock Text="项目名称:" Margin="0,0,0,4"/>
+        <TextBox x:Name="项目名称输入框" Height="26" 
+                 VerticalContentAlignment="Center" 
+                 TextChanged="项目名称输入框_TextChanged"/>
+
+        <TextBlock Text="放在哪个目录:" Margin="0,10,0,4"/>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <ComboBox x:Name="项目位置输入框" Grid.Column="0" Height="26"
+                      IsEditable="True"
+                      VerticalContentAlignment="Center"/>
+            <Button Grid.Column="1" Content="浏览…" Padding="10,3" Margin="6,0,0,0" Click="选择文件夹_Click"/>
+        </Grid>
+
+        <TextBlock x:Name="警告文本" Margin="0,10,0,0" Foreground="#D16969" TextWrapping="Wrap"/>
+
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,16,0,0">
+            <Button Content="创建并打开" Padding="14,4" IsDefault="True" Click="新建_Click"/>
+            <Button Content="取消" Padding="14,4" Margin="8,0,0,0" IsCancel="True" Click="取消_Click"/>
+        </StackPanel>
+    </StackPanel>
+</Window>

@@ -1,0 +1,107 @@
+<UserControl x:Class="hehshihbeen_compiler.编辑器"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:local="clr-namespace:hehshihbeen_compiler"
+             xmlns:avalon="clr-namespace:ICSharpCode.AvalonEdit;assembly=ICSharpCode.AvalonEdit"
+             mc:Ignorable="d"
+             d:DesignHeight="450" d:DesignWidth="800">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <!-- **这里千万不要再套一层 ScrollViewer**(第141批实测定位:`C12 点汇编视图整个窗口卡死` 的根因)——
+             ScrollViewer 会拿**无限高度**去量孩子,TextEditor 于是把**整篇每一行**都排一遍:
+             实测展开汇编 5846 行时 可视行 5846 / 进一次视图 7.0 s(界面上就是"点下去整个窗口没反应");
+             视口有界时 可视行 43 / 19 ms。滚动交给 AvalonEdit 自己(它自带滚动条,只排看得见的那几十行)。 -->
+        <Grid Grid.Row="0">
+            <Grid>
+                <!-- C7:这里原来有一个 overlay `TextBlock`(整篇扫描 + 造 Run 上色)—— 它在编辑器**底下**,
+                     编辑器背景是不透明的主题色 ⇒ 根本看不见,却让每次改字都要整篇扫一遍;
+                     现在着色只走 AvalonEdit 的逐行通路(看得见的那几十行 + 逐行缓存),那个 overlay 删掉了 -->
+                <!-- 使用 AvalonEdit 替代 RichTextBox -->
+                <avalon:TextEditor x:Name="代码框"
+                                   Margin="0,0,0,0"
+                                   FontFamily="Consolas"
+                                   FontSize="14"
+                                   ShowLineNumbers="True"
+                                   WordWrap="True"
+                                   VerticalScrollBarVisibility="Auto"
+                                   HorizontalScrollBarVisibility="Auto"
+                                   SyntaxHighlighting="None"
+                                   Background="Transparent"
+                                   Foreground="Black">
+                    <!-- 右键菜单:AvalonEdit 自己**不带**右键菜单(程序集里连 ContextMenu 这个名字都没有),
+                         所以这里加一项不会顶掉任何现成命令("重命名"的实现挂在主窗口,见 编辑器.重命名被请求) -->
+                    <avalon:TextEditor.ContextMenu>
+                        <ContextMenu>
+                            <MenuItem Header="重命名(_M)" Click="右键重命名_Click"
+                                      ToolTip="把光标下那个名字在整个工程里改掉:先给一份改动预览,确认后才逐文件落盘;注释与字符串里的同名文字不会被改"/>
+                            <Separator/>
+                            <MenuItem Header="转到定义(_D)" Click="右键转到定义_Click" InputGestureText="F12"
+                                      ToolTip="跳到光标下那个名字的定义处(跨文件);内建函数 / 宿主能力 / 关键字这类没有源码定义的会**说清是哪一类**,不会没反应"/>
+                            <MenuItem Header="查找引用(_R)" Click="右键查找引用_Click" InputGestureText="Shift+F12"
+                                      ToolTip="列出谁用了这个名字:函数看调用边表(语义);变量按文本整词找(说明里会写明口径)"/>
+                            <Separator/>
+                            <!-- H33:思维导图(用户 2026-09-25 拍板)。从当前这份文件起;光标在某个方法里就从那个方法起。 -->
+                            <MenuItem Header="打开思维导图(_T)" Click="右键思维导图_Click"
+                                      ToolTip="把当前这一处一层一层点开:文件 → 结构 / 方法 → 这个方法又调用了谁…(浮动窗靠右侧生成;已经长出来的不会被清掉;一层超过 20 个时先出 20 个 + 一条「…」)"/>
+                            <Separator/>
+                            <MenuItem Header="切换断点(_B)" Click="右键切换断点_Click" InputGestureText="F9"
+                                      ToolTip="在光标那一行加/去一个断点(和调试菜单里的那条一样)"/>
+                            <MenuItem Header="断点条件(_C)…" Click="右键断点条件_Click"
+                                      ToolTip="给光标那一行已经下好的断点写条件(如 i == 5):条件为假就当没命中、接着跑;留空 = 每次停"/>
+                            <!-- P35:监视表达式(同一个对话框,只是落到"监视"页上) -->
+                            <MenuItem Header="加监视表达式(_W)…" Click="右键加监视_Click" InputGestureText="Ctrl+Alt+W"
+                                      ToolTip="把光标下的名字(或选中的那段文字)加进底部『监视』页,每走一步自动重算"/>
+                            <MenuItem Header="删除全部断点(_A)" Click="右键删除全部断点_Click"
+                                      ToolTip="把这个工程里的断点全清掉(和调试菜单里的「清除所有断点」同一件事;断点存在项目目录的 断点.hbd)"/>
+                        </ContextMenu>
+                    </avalon:TextEditor.ContextMenu>
+                </avalon:TextEditor>
+                <!-- 候选弹出框
+                     **放置目标必须是真的那个控件名**(第144批):这里原来绑了一个**不存在的元素名**
+                     `源代码框` —— 全仓库根本没有这个名字(探针实测 `PlacementTarget = null`),
+                     于是"按编辑器坐标算出来的偏移量"落到了兜底目标上。
+                     另外落点一律先过 `弹窗定位C.算`(`编辑器.算候选框落点()`),保证框整个留在编辑区里:
+                     框一旦越出屏幕底边,WPF 就把它按到屏幕底边(用户实测:跑到任务栏上)。 -->
+                <Popup x:Name="候选Popup" StaysOpen="False" Placement="Relative" PlacementTarget="{Binding ElementName=代码框}">
+                    <Border Background="White" BorderBrush="Gray" BorderThickness="1">
+                        <!-- 候选一行 = 名字 + 右侧灰字说明(C19:变量的类型 / 函数的参数表 / 字段的类型 —— 就是"参数提示"。
+                             说明为空时不占地方;框的大小仍由 `量候选框大小()` 量出来,落点照旧夹在编辑区里) -->
+                        <!-- **字色必须自己钉**:这个框是**写死的白底**,而 `Popup` 里那棵树的字色是**从编辑器继承**的 ——
+                             暗 / 黑客帝国 / 赛博朋克下编辑器前景是浅色 ⇒ 不钉就是"浅字压白底",候选一个都看不见。
+                             壳子钉在 `ListBox` 上(底下两格都吃它),说明那一格照旧单独用灰。 -->
+                        <ListBox x:Name="候选List" MinWidth="120" MaxHeight="200" Foreground="#FF1E1E1E">
+                            <ListBox.ItemTemplate>
+                                <DataTemplate>
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Text="{Binding 词}"/>
+                                        <TextBlock Text="{Binding 说明}" Foreground="Gray" Margin="10,0,0,0"/>
+                                    </StackPanel>
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
+                        </ListBox>
+                    </Border>
+                </Popup>
+                <!-- P37 签名提示:写着写着敲出 `(` 时,把那个函数的参数表显示在光标下面,
+                     并标出"你现在在第几个参数上"(引擎 `签名提示规则C` 算,这里只画)。
+                     与候选框同一套落点口径(`算提示落点()`),框整个留在编辑区里。 -->
+                <Popup x:Name="签名Popup" StaysOpen="True" Placement="Relative" PlacementTarget="{Binding ElementName=代码框}"
+                       IsHitTestVisible="False" AllowsTransparency="True">
+                    <Border Background="#F2FFFFFF" BorderBrush="Gray" BorderThickness="1" CornerRadius="3" Padding="6,3">
+                        <!-- 同上:白底框里的字色钉住(暗底主题下编辑器前景是浅色,继承过来就看不见了)。
+                             `StackPanel` 自己没有 `Foreground`,所以两格各自钉。 -->
+                        <StackPanel>
+                            <TextBlock x:Name="签名文本" FontFamily="Consolas" FontSize="13" Foreground="#FF1E1E1E"/>
+                            <TextBlock x:Name="签名说明" Foreground="Gray" FontSize="11" MaxWidth="640"
+                                       TextWrapping="NoWrap" TextTrimming="CharacterEllipsis" Visibility="Collapsed"/>
+                        </StackPanel>
+                    </Border>
+                </Popup>
+            </Grid>
+        </Grid>
+    </Grid>
+</UserControl>

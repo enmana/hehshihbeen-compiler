@@ -1,0 +1,83 @@
+# 把 帮助\ 那 326 页中文帮助发布成可爬的静态站点。
+#
+# 为什么要这一步:仓库里的 .html 被 raw.githubusercontent.com 当 text/plain 发出去,
+# 搜索引擎不把它当网页,**326 页中文文档对爬虫等于不存在**;开了 Pages 它们才有 URL。
+#
+# 为什么不直接 path: 帮助 —— Actions 对非 ASCII 目录名支持不稳,先复制到 _site 再传。
+# sitemap.xml 与 robots.txt 都是**现场从文件列表生成**的,不手抄(与仓库"拒绝黑箱"同一条口径)。
+
+name: 发布中文帮助站点
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '帮助/**'
+      - '.github/workflows/pages.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: 记下站点根地址
+        run: |
+          OWNER_REPO="${GITHUB_REPOSITORY}"
+          echo "SITE_BASE=https://${OWNER_REPO%%/*}.github.io/${OWNER_REPO##*/}" >> "$GITHUB_ENV"
+
+      - name: 把 帮助/ 复制到纯 ASCII 的 _site/
+        run: |
+          mkdir -p _site
+          cp -r 帮助/. _site/
+          echo "页面数:$(find _site -name '*.html' | wc -l)"
+
+      - name: 生成 sitemap.xml 与 robots.txt(从实际页面列表现场生成,不手抄)
+        run: |
+          python3 - "$SITE_BASE" <<'PY'
+          import sys, os, urllib.parse
+          base = sys.argv[1].rstrip('/')
+          pages = []
+          for root, _dirs, files in os.walk('_site'):
+              for f in files:
+                  if f.endswith('.html'):
+                      rel = os.path.relpath(os.path.join(root, f), '_site').replace(os.sep, '/')
+                      pages.append(urllib.parse.quote(rel))
+          pages.sort()
+          with open('_site/sitemap.xml', 'w', encoding='utf-8') as fh:
+              fh.write('<?xml version="1.0" encoding="UTF-8"?>\n')
+              fh.write('<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n')
+              for p in pages:
+                  fh.write(f'  <url><loc>{base}/{p}</loc></url>\n')
+              fh.write('</urlset>\n')
+          with open('_site/robots.txt', 'w', encoding='utf-8') as fh:
+              fh.write('User-agent: *\nAllow: /\n')
+              fh.write(f'Sitemap: {base}/sitemap.xml\n')
+          print(f'sitemap: {len(pages)} 条')
+          PY
+
+      - uses: actions/configure-pages@v5
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

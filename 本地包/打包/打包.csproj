@@ -1,0 +1,42 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- 本仓库本地 NuGet 源里那份 AvalonEdit(`本地包\HB.AvalonEdit.6.3.2.nupkg`)就是这么打出来的。
+       为什么不走 nuget.org 上的官方包(`AvalonEdit` 6.3.1.120):官方发布版里**没有**我们这处本地补丁 ——
+       `TextView.DefaultTextHeight`(第55批,`任务清单.归档.md` 第41节):行距照旧生效,
+       但**插入符与选择框按文字本身的高度**画,不跟着行距一起拉长(默认行距 26、字号 14,不补就会看出长竖条)。
+       补丁源码树不在本仓库里(在开发者机器上),这个工程只负责把"已经编好的补丁 dll"打成包。
+
+       重打一遍:
+         ① 在补丁源码树里编 Release:
+            dotnet build <源码>\ICSharpCode.AvalonEdit\ICSharpCode.AvalonEdit.csproj -c Release -f net10.0-windows
+         ② dotnet pack 本地包\打包\打包.csproj -c Release -o 本地包 -p:AvalonEditDll=<那份 dll 的路径>
+            (MSBuild 的属性名不认非 ASCII,所以这里叫 `AvalonEditDll`)
+       打出来的包:`lib\net10.0-windows7.0\ICSharpCode.AvalonEdit.dll`
+       (程序集名没改,代码里照旧 `using ICSharpCode.AvalonEdit…`;包 id 用 `HB.AvalonEdit` 是为了
+        跟 nuget.org 上的官方 `AvalonEdit` 区分开 —— 同名不同物会让人以为拿的是官方发布版)。
+
+       改这个包要同时改:这里的版本号、`hehshihbeen-compiler.csproj` 的 `PackageReference`、
+       `第三方组件.md`、自检 `文档数字 AvalonEdit 走仓库内本地包` 那条钉子。 -->
+
+  <PropertyGroup>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <PackageId>HB.AvalonEdit</PackageId>
+    <Version>6.3.2</Version>
+    <Authors>AvalonEdit Contributors(本地补丁版)</Authors>
+    <Description>AvalonEdit(WPF 文本编辑器)—— HB 本地补丁版:行距生效时插入符与选择框仍按文字本身的高度画。</Description>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageProjectUrl>https://github.com/icsharpcode/AvalonEdit</PackageProjectUrl>
+    <Copyright>2000-2025 AlphaSierraPapa for the SharpDevelop Team</Copyright>
+    <PackageTags>WPF Text Editor AvalonEdit</PackageTags>
+    <IncludeBuildOutput>false</IncludeBuildOutput>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+    <NoWarn>$(NoWarn);NU5128</NoWarn>
+    <!-- 缺省取"补丁源码树"的 Release 产物;换机器/换目录就用 -p:补丁dll=… 指过去 -->
+    <AvalonEditDll Condition="'$(AvalonEditDll)' == ''">E:\Downloads\TempDown\AvalonEdit-master\AvalonEdit-master\ICSharpCode.AvalonEdit\bin\Release\net10.0-windows\ICSharpCode.AvalonEdit.dll</AvalonEditDll>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="$(AvalonEditDll)" Pack="true" PackagePath="lib\net10.0-windows7.0\" />
+  </ItemGroup>
+
+</Project>

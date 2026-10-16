@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+	<OutputType>Exe</OutputType>
+	<TargetFramework>net10.0</TargetFramework>
+	<RootNamespace>Samples.SimpleSample</RootNamespace>
+	<Nullable>enable</Nullable>
+	<ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+  <ItemGroup>
+	<ProjectReference Include="..\..\Engine.Core\Engine.Core.csproj" />
+	<ProjectReference Include="..\..\Engine.Scene\Engine.Scene.csproj" />
+	<ProjectReference Include="..\..\Engine.Renderer\Engine.Renderer.csproj" />
+	<ProjectReference Include="..\..\Engine.Renderer.Veldrid\Engine.Renderer.Veldrid.csproj" />
+	<ProjectReference Include="..\..\Engine.Content\Engine.Content.csproj" />
+  </ItemGroup>
+</Project>

@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="手机IDE.MainPage"
+             Title="手机IDE · HB 汇编">
+
+    <Grid RowDefinitions="Auto,*,Auto,Auto,Auto,Auto,Auto,Auto"
+          Padding="8" RowSpacing="6">
+        <!-- 代码输入 -->
+        <Label Grid.Row="0" Text="源代码(中间层/汇编,中英双语)" FontAttributes="Bold"/>
+        <Editor x:Name="源码编辑框"
+                Grid.Row="1"
+                FontFamily="monospace"
+                AutoSize="Disabled"
+                Keyboard="Plain"
+                TextChanged="源码编辑框_TextChanged"/>
+
+        <!-- 智能输入候选栏(有候选才显示) -->
+        <CollectionView x:Name="候选栏"
+                        Grid.Row="2"
+                        IsVisible="False"
+                        HeightRequest="44"
+                        SelectionMode="Single"
+                        SelectionChanged="候选栏_SelectionChanged">
+            <CollectionView.ItemsLayout>
+                <LinearItemsLayout Orientation="Horizontal" ItemSpacing="6"/>
+            </CollectionView.ItemsLayout>
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <Border BackgroundColor="#2B2B2B"
+                            Stroke="#555555"
+                            StrokeThickness="1"
+                            StrokeShape="RoundRectangle 8"
+                            Padding="10,6">
+                        <Label Text="{Binding 词}" TextColor="White" FontSize="13"
+                               VerticalOptions="Center"/>
+                    </Border>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+
+        <!-- 操作按钮 -->
+        <HorizontalStackLayout Grid.Row="3" Spacing="8">
+            <Button x:Name="汇编按钮" Text="汇编" Clicked="汇编按钮_Click"/>
+            <!-- 第329批:「执行」不再等「汇编」成功才可点 —— 它自己会先编一遍(用户真机核对时点名) -->
+            <Button x:Name="执行按钮" Text="执行" Clicked="执行按钮_Click"/>
+            <Button Text="装入示例" Clicked="装入示例_Click"/>
+        </HorizontalStackLayout>
+
+        <!-- D4:接系统选择器(打开文件 / 打开工程目录)—— 手机上没有"路径输入"这一说;
+             H10:「保存」把编辑框那份写回磁盘,没打开过文件就落在沙箱工程目录里(兼"新建工程") -->
+        <HorizontalStackLayout Grid.Row="4" Spacing="8">
+            <Button x:Name="打开文件按钮" Text="打开文件…" Clicked="打开文件按钮_Click"/>
+            <Button x:Name="打开目录按钮" Text="打开工程目录…" Clicked="打开目录按钮_Click"/>
+            <Button x:Name="保存按钮" Text="保存" Clicked="保存按钮_Click"/>
+        </HorizontalStackLayout>
+
+        <!-- H29:控制台输入 —— 照桌面「控制台」页的口径:一行一送(回车或「发送」),
+             程序读到没输入会**停在原地等**,送进去接着跑 -->
+        <Grid Grid.Row="5" ColumnDefinitions="*,Auto" ColumnSpacing="8">
+            <Entry x:Name="控制台输入框"
+                   Grid.Column="0"
+                   Placeholder="送给程序一行输入(回车 / 发送)"
+                   Completed="控制台输入框_Completed"/>
+            <Button x:Name="发送按钮"
+                    Grid.Column="1"
+                    Text="发送"
+                    Clicked="发送按钮_Click"/>
+        </Grid>
+
+        <!-- 状态/结果输出 -->
+        <Label Grid.Row="6" Text="输出" FontAttributes="Bold"/>
+        <Editor x:Name="结果框"
+                Grid.Row="7"
+                IsReadOnly="True"
+                FontFamily="monospace"
+                AutoSize="Disabled"
+                HeightRequest="220"
+                Keyboard="Plain"/>
+    </Grid>
+
+</ContentPage>
