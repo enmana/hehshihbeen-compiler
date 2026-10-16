@@ -5,5 +5,5 @@
 
 - **学语言 / 查用法**:[在线帮助站](https://enmana.github.io/hehshihbeen-compiler/)(整套中文文档都在那儿)
 - **不装 .NET 直接用**:[Releases](https://github.com/enmana/hehshihbeen-compiler/releases) 下 `hbcc.exe`(自包含单文件,Windows x64)
-- **看例子**:`Sample\` 下每个标准工程都有 `主程序.hb` 与一行 `// 预期输出:`
+- **看例子**:`Sample\` 下每个标准工程都有一份主程序与一行 `// 预期输出:`
 - **从源码自己编**:装 .NET 10 SDK,`dotnet build 编译器CLI\编译器CLI.csproj -c Release`(图形 IDE 用 `dotnet build hehshihbeen-compiler.csproj`)
