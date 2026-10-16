@@ -58,6 +58,7 @@
       <li><a href="../目录/上手-32-运行时-睡眠---冲刷---改名---临时目录.html">32,运行时:睡眠 / 冲刷 / 改名 / 临时目录</a></li>
       <li><a href="../目录/上手-33-异步-别让一次阻塞调用把整帧卡住.html">33,异步:别让一次阻塞调用把整帧卡住</a></li>
       <li><a href="../目录/上手-34-数据表-盘上一张定长记录表--Sample-库-数据表-hb.html">34,数据表:盘上一张定长记录表(`Sample\库\数据表.hb`)</a></li>
+      <li><a href="../目录/上手-35-自己攒一个-IDE-编辑器内核---视图---三格布局---打开存盘---后端接线-全是--Sample-库---里的纯-HB-库.html">35,自己攒一个 IDE:编辑器内核 / 视图 / 三格布局 / 打开存盘 / 后端接线(全是 `Sample\库\` 里的纯 HB 库)</a></li>
       </ul>
     </details>
   </li>
@@ -423,6 +424,9 @@
       <li><a href="../目录/类库-CSV-hb.html">CSV.hb</a></li>
       <li><a href="../目录/类库-CSV流-hb.html">CSV流.hb</a></li>
       <li><a href="../目录/类库-HTML转义-hb.html">HTML转义.hb</a></li>
+      <li><a href="../目录/类库-IDE后端-hb.html">IDE后端.hb</a></li>
+      <li><a href="../目录/类库-IDE布局-hb.html">IDE布局.hb</a></li>
+      <li><a href="../目录/类库-IDE文件-hb.html">IDE文件.hb</a></li>
       <li><a href="../目录/类库-JSON-hb.html">JSON.hb</a></li>
       <li><a href="../目录/类库-Markdown-hb.html">Markdown.hb</a></li>
       <li><a href="../目录/类库-NDJSON流-hb.html">NDJSON流.hb</a></li>
@@ -525,7 +529,7 @@
 <nav class="面包屑"><a href="../目录/介绍-语言特性速览.html">帮助总目录</a> <span>›</span> <a href="../目录/上手-1-界面长什么样.html">上手</a> <span>›</span> <span>22,宿主能力:文件、目录、环境变量与时间</span></nav>
 <h1 class="页标题">22,宿主能力:文件、目录、环境变量与时间</h1>
 <p class="节导语">【一句话】把 .hb 源码编译成 4 字节定长指令,在自带虚拟机里跑,并对照注释里的期望值做断言。<br>
-下面是 <strong>34 节</strong>手写教程,与命令行 <code>hbcc --help-text</code> 的《快速上手》<strong>同一份正文</strong>(站点在生成时现场拆开,改一处两边都变)。</p>
+下面是 <strong>35 节</strong>手写教程,与命令行 <code>hbcc --help-text</code> 的《快速上手》<strong>同一份正文</strong>(站点在生成时现场拆开,改一处两边都变)。</p>
 <p class="正文">  要碰&quot;文件、目录、环境变量、时间&quot;这些<strong>只有宿主(命令行 / IDE)才知道的事</strong>,用这<strong>四十个</strong>内建函数(不是关键字,和 <code>申请</code>/<code>读取行</code> 同一档;<br>
   中英可整体切换。这一节数的只是<strong>与宿主打交道的那一批</strong>,<strong>内建函数一共 59 个</strong>,另外那些是输入输出与内存那一族,见 <code>hbcc --help-text</code> 的<br>
   【内建函数】):读文件 / 写文件 / 追加写文件 / 读文件块 / 建目录 / 删文件 / 删目录 / 列目录 / 环境变量 / 当前时间 / <strong>当前毫秒</strong> / 移动到 /<br>

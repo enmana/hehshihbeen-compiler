@@ -58,6 +58,7 @@
       <li><a href="../目录/上手-32-运行时-睡眠---冲刷---改名---临时目录.html">32,运行时:睡眠 / 冲刷 / 改名 / 临时目录</a></li>
       <li><a href="../目录/上手-33-异步-别让一次阻塞调用把整帧卡住.html">33,异步:别让一次阻塞调用把整帧卡住</a></li>
       <li><a href="../目录/上手-34-数据表-盘上一张定长记录表--Sample-库-数据表-hb.html">34,数据表:盘上一张定长记录表(`Sample\库\数据表.hb`)</a></li>
+      <li><a href="../目录/上手-35-自己攒一个-IDE-编辑器内核---视图---三格布局---打开存盘---后端接线-全是--Sample-库---里的纯-HB-库.html">35,自己攒一个 IDE:编辑器内核 / 视图 / 三格布局 / 打开存盘 / 后端接线(全是 `Sample\库\` 里的纯 HB 库)</a></li>
       </ul>
     </details>
   </li>
@@ -423,6 +424,9 @@
       <li><a href="../目录/类库-CSV-hb.html">CSV.hb</a></li>
       <li><a href="../目录/类库-CSV流-hb.html">CSV流.hb</a></li>
       <li><a href="../目录/类库-HTML转义-hb.html">HTML转义.hb</a></li>
+      <li><a href="../目录/类库-IDE后端-hb.html">IDE后端.hb</a></li>
+      <li><a href="../目录/类库-IDE布局-hb.html">IDE布局.hb</a></li>
+      <li><a href="../目录/类库-IDE文件-hb.html">IDE文件.hb</a></li>
       <li><a href="../目录/类库-JSON-hb.html">JSON.hb</a></li>
       <li><a href="../目录/类库-Markdown-hb.html">Markdown.hb</a></li>
       <li><a href="../目录/类库-NDJSON流-hb.html">NDJSON流.hb</a></li>
@@ -569,7 +573,7 @@
 <li><strong>行号栏不画分隔线</strong>(要就自己 <code>画线</code>;本库只画内容那一批,免得命令表里混进装饰);</li>
 <li><strong><code>水平偏移</code> 的单位是&quot;格&quot;</strong>,不是像素 —— 与列号同一口径(不然中文行会越滚越歪)。</li>
 </ul>
-<p class="正文">公开方法(共 18 个):</p>
+<p class="正文">公开方法(共 20 个):</p>
 <table class="方法表">
 <thead><tr><th>方法</th><th>签名</th><th>作用</th></tr></thead>
 <tbody>
@@ -591,6 +595,8 @@
 <tr><td>编辑器视图_画滚动条</td><td>编辑器视图_画滚动条(编辑器视图.面板 屏, 编辑器.编辑缓冲 编) 返回 整数</td><td>滚动条:行数比可视行数多才画(槽一条 + 滑块一条);不然给 0 条</td></tr>
 <tr><td>编辑器视图_正文左</td><td>编辑器视图_正文左(编辑器视图.面板 屏) 返回 整数</td><td>正文区左边界(行号栏右边;<code>画正文</code> 与 <code>画光标</code> 两处共用同一个口径)</td></tr>
 <tr><td>编辑器视图_正文起点</td><td>编辑器视图_正文起点(编辑器视图.面板 屏) 返回 整数</td><td>正文起点(正文区左边界再减去水平偏移换算出来的像素)</td></tr>
+<tr><td>行在第几</td><td>行在第几(编辑器视图.面板 屏, 编辑器.编辑缓冲 编, 整数 y) 返回 整数</td><td>点在这一格的什么位置:第几行(可视区内的行号,越界夹回可视区)—— 主循环拿它做 <code>设光标</code> 的第一半</td></tr>
+<tr><td>列在第几</td><td>列在第几(编辑器视图.面板 屏, 编辑器.编辑缓冲 编, 整数 行号, 整数 x) 返回 整数</td><td>(点在正文左边留白里给 0;点在某一个字右半边算在那个字之后 —— 与真编辑器一样)</td></tr>
 </tbody>
 </table>
 <nav class="翻页">

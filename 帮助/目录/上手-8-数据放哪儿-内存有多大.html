@@ -58,6 +58,7 @@
       <li><a href="../目录/上手-32-运行时-睡眠---冲刷---改名---临时目录.html">32,运行时:睡眠 / 冲刷 / 改名 / 临时目录</a></li>
       <li><a href="../目录/上手-33-异步-别让一次阻塞调用把整帧卡住.html">33,异步:别让一次阻塞调用把整帧卡住</a></li>
       <li><a href="../目录/上手-34-数据表-盘上一张定长记录表--Sample-库-数据表-hb.html">34,数据表:盘上一张定长记录表(`Sample\库\数据表.hb`)</a></li>
+      <li><a href="../目录/上手-35-自己攒一个-IDE-编辑器内核---视图---三格布局---打开存盘---后端接线-全是--Sample-库---里的纯-HB-库.html">35,自己攒一个 IDE:编辑器内核 / 视图 / 三格布局 / 打开存盘 / 后端接线(全是 `Sample\库\` 里的纯 HB 库)</a></li>
       </ul>
     </details>
   </li>
@@ -423,6 +424,9 @@
       <li><a href="../目录/类库-CSV-hb.html">CSV.hb</a></li>
       <li><a href="../目录/类库-CSV流-hb.html">CSV流.hb</a></li>
       <li><a href="../目录/类库-HTML转义-hb.html">HTML转义.hb</a></li>
+      <li><a href="../目录/类库-IDE后端-hb.html">IDE后端.hb</a></li>
+      <li><a href="../目录/类库-IDE布局-hb.html">IDE布局.hb</a></li>
+      <li><a href="../目录/类库-IDE文件-hb.html">IDE文件.hb</a></li>
       <li><a href="../目录/类库-JSON-hb.html">JSON.hb</a></li>
       <li><a href="../目录/类库-Markdown-hb.html">Markdown.hb</a></li>
       <li><a href="../目录/类库-NDJSON流-hb.html">NDJSON流.hb</a></li>
@@ -525,7 +529,7 @@
 <nav class="面包屑"><a href="../目录/介绍-语言特性速览.html">帮助总目录</a> <span>›</span> <a href="../目录/上手-1-界面长什么样.html">上手</a> <span>›</span> <span>8,数据放哪儿、内存有多大</span></nav>
 <h1 class="页标题">8,数据放哪儿、内存有多大</h1>
 <p class="节导语">【一句话】把 .hb 源码编译成 4 字节定长指令,在自带虚拟机里跑,并对照注释里的期望值做断言。<br>
-下面是 <strong>34 节</strong>手写教程,与命令行 <code>hbcc --help-text</code> 的《快速上手》<strong>同一份正文</strong>(站点在生成时现场拆开,改一处两边都变)。</p>
+下面是 <strong>35 节</strong>手写教程,与命令行 <code>hbcc --help-text</code> 的《快速上手》<strong>同一份正文</strong>(站点在生成时现场拆开,改一处两边都变)。</p>
 <p class="正文">  变量槽紧跟代码之后,代码长了地址就大;写内存示例请从 0x2000 起,不要用 0x100 这类低地址(否则程序一大就会把自己的指令覆盖掉 ——<br>
   自修改代码)。运行内存<strong>默认 1MB</strong>(1048576 字节;够写约 2 万行),上限 <strong>64MB</strong>(够约 130 万行);代码段 + 变量数据段从 0 往上排,<br>
   栈从内存末尾往下长。想改:工程文件里写 <code>&quot;内存&quot;: &quot;512KB&quot;</code>(也支持 <code>1MB</code> / 直接写字节数 <code>1048576</code>),最大 <strong>64MB</strong>。</p>

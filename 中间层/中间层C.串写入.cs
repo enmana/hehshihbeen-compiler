@@ -66,9 +66,9 @@ namespace hehshihbeen_compiler
             return 目标;
         }
 
-        /// <summary> 目标现在有几个字节(定长缓冲与堆串都按"数到第一个 0"算) </summary>
+        /// <summary> 目标现在有几个字节(堆串读**块头长度字**;定长缓冲没有块头 ⇒ 数到第一个 0) </summary>
         private string 取串长度(串写目标C 目标, string 字地址, int 行号)
-            => 发出数到零字节(目标.堆串 ? 读堆串数据址(字地址) : 目标.定长数据址);
+            => 目标.堆串 ? 发出堆串长度(读堆串数据址(字地址)) : 发出数到零字节(目标.定长数据址);
 
         /// <summary> 堆串字段 +0 那个字:数据地址(0 = 还没分配过) </summary>
         private string 读堆串数据址(string 字地址)

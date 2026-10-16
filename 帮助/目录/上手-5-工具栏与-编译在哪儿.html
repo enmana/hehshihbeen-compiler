@@ -58,6 +58,7 @@
       <li><a href="../目录/上手-32-运行时-睡眠---冲刷---改名---临时目录.html">32,运行时:睡眠 / 冲刷 / 改名 / 临时目录</a></li>
       <li><a href="../目录/上手-33-异步-别让一次阻塞调用把整帧卡住.html">33,异步:别让一次阻塞调用把整帧卡住</a></li>
       <li><a href="../目录/上手-34-数据表-盘上一张定长记录表--Sample-库-数据表-hb.html">34,数据表:盘上一张定长记录表(`Sample\库\数据表.hb`)</a></li>
+      <li><a href="../目录/上手-35-自己攒一个-IDE-编辑器内核---视图---三格布局---打开存盘---后端接线-全是--Sample-库---里的纯-HB-库.html">35,自己攒一个 IDE:编辑器内核 / 视图 / 三格布局 / 打开存盘 / 后端接线(全是 `Sample\库\` 里的纯 HB 库)</a></li>
       </ul>
     </details>
   </li>
@@ -423,6 +424,9 @@
       <li><a href="../目录/类库-CSV-hb.html">CSV.hb</a></li>
       <li><a href="../目录/类库-CSV流-hb.html">CSV流.hb</a></li>
       <li><a href="../目录/类库-HTML转义-hb.html">HTML转义.hb</a></li>
+      <li><a href="../目录/类库-IDE后端-hb.html">IDE后端.hb</a></li>
+      <li><a href="../目录/类库-IDE布局-hb.html">IDE布局.hb</a></li>
+      <li><a href="../目录/类库-IDE文件-hb.html">IDE文件.hb</a></li>
       <li><a href="../目录/类库-JSON-hb.html">JSON.hb</a></li>
       <li><a href="../目录/类库-Markdown-hb.html">Markdown.hb</a></li>
       <li><a href="../目录/类库-NDJSON流-hb.html">NDJSON流.hb</a></li>
@@ -525,7 +529,7 @@
 <nav class="面包屑"><a href="../目录/介绍-语言特性速览.html">帮助总目录</a> <span>›</span> <a href="../目录/上手-1-界面长什么样.html">上手</a> <span>›</span> <span>5,工具栏与&quot;编译在哪儿&quot;</span></nav>
 <h1 class="页标题">5,工具栏与&quot;编译在哪儿&quot;</h1>
 <p class="节导语">【一句话】把 .hb 源码编译成 4 字节定长指令,在自带虚拟机里跑,并对照注释里的期望值做断言。<br>
-下面是 <strong>34 节</strong>手写教程,与命令行 <code>hbcc --help-text</code> 的《快速上手》<strong>同一份正文</strong>(站点在生成时现场拆开,改一处两边都变)。</p>
+下面是 <strong>35 节</strong>手写教程,与命令行 <code>hbcc --help-text</code> 的《快速上手》<strong>同一份正文</strong>(站点在生成时现场拆开,改一处两边都变)。</p>
 <p class="正文">  工具栏(从左到右):新建项目 / 新建文件 / 打开项目 / 打开文件 / 保存 / 撤销 / 重做 / 执行(F5) / 停止(Shift+F5) / 中英切换 /<br>
                    展开到汇编(<code>&lt;/&gt;</code>)<br>
   <strong>编译没有工具栏按钮</strong> —— 在菜单里:运行 → 编译(启动项目),按启动项目的工程文件联合编译(启动文件排第一,机器码从它开始执行);<br>

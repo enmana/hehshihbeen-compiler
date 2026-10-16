@@ -58,6 +58,7 @@
       <li><a href="目录/上手-32-运行时-睡眠---冲刷---改名---临时目录.html">32,运行时:睡眠 / 冲刷 / 改名 / 临时目录</a></li>
       <li><a href="目录/上手-33-异步-别让一次阻塞调用把整帧卡住.html">33,异步:别让一次阻塞调用把整帧卡住</a></li>
       <li><a href="目录/上手-34-数据表-盘上一张定长记录表--Sample-库-数据表-hb.html">34,数据表:盘上一张定长记录表(`Sample\库\数据表.hb`)</a></li>
+      <li><a href="目录/上手-35-自己攒一个-IDE-编辑器内核---视图---三格布局---打开存盘---后端接线-全是--Sample-库---里的纯-HB-库.html">35,自己攒一个 IDE:编辑器内核 / 视图 / 三格布局 / 打开存盘 / 后端接线(全是 `Sample\库\` 里的纯 HB 库)</a></li>
       </ul>
     </details>
   </li>
@@ -423,6 +424,9 @@
       <li><a href="目录/类库-CSV-hb.html">CSV.hb</a></li>
       <li><a href="目录/类库-CSV流-hb.html">CSV流.hb</a></li>
       <li><a href="目录/类库-HTML转义-hb.html">HTML转义.hb</a></li>
+      <li><a href="目录/类库-IDE后端-hb.html">IDE后端.hb</a></li>
+      <li><a href="目录/类库-IDE布局-hb.html">IDE布局.hb</a></li>
+      <li><a href="目录/类库-IDE文件-hb.html">IDE文件.hb</a></li>
       <li><a href="目录/类库-JSON-hb.html">JSON.hb</a></li>
       <li><a href="目录/类库-Markdown-hb.html">Markdown.hb</a></li>
       <li><a href="目录/类库-NDJSON流-hb.html">NDJSON流.hb</a></li>
@@ -526,7 +530,7 @@
 <h1 class="页标题">上手</h1>
 <p class="导语">从打开界面到编译、调试、打包、命令行 —— 一条一条按顺序写的教程。</p>
 <p>【一句话】把 .hb 源码编译成 4 字节定长指令,在自带虚拟机里跑,并对照注释里的期望值做断言。<br>
-下面是 <strong>34 节</strong>手写教程,与命令行 <code>hbcc --help-text</code> 的《快速上手》<strong>同一份正文</strong>(站点在生成时现场拆开,改一处两边都变)。</p>
+下面是 <strong>35 节</strong>手写教程,与命令行 <code>hbcc --help-text</code> 的《快速上手》<strong>同一份正文</strong>(站点在生成时现场拆开,改一处两边都变)。</p>
 <table class="索引表">
 <thead><tr><th>条目</th><th>说明</th></tr></thead>
 <tbody>
@@ -564,9 +568,10 @@
 <tr><td><a href="目录/上手-32-运行时-睡眠---冲刷---改名---临时目录.html">32,运行时:睡眠 / 冲刷 / 改名 / 临时目录</a></td><td>这四条是&quot;程序自己跟机器打交道&quot;的那几件(与前面那些宿主能力同一档;中英可整体切换):</td></tr>
 <tr><td><a href="目录/上手-33-异步-别让一次阻塞调用把整帧卡住.html">33,异步:别让一次阻塞调用把整帧卡住</a></td><td>前面那几节(<code>读文件</code> / <code>读一块</code> / <code>接收</code>)都是<strong>全同步</strong>的:调用一次,程序就停在那儿等它回来。界面程序里这会<strong>把整帧卡住</strong>。这一节的三个函数把&quot;等&quot;这件事</td></tr>
 <tr><td><a href="目录/上手-34-数据表-盘上一张定长记录表--Sample-库-数据表-hb.html">34,数据表:盘上一张定长记录表(`Sample\库\数据表.hb`)</a></td><td>这一节讲的是<strong>库</strong>(<code>包含</code> 进来用的那种),不是内建函数 - 语言面<strong>一个新名字都没加</strong>。它解决的是&quot;要一张按顺序存、按主键找的表,而又不许引任何第三方库、</td></tr>
+<tr><td><a href="目录/上手-35-自己攒一个-IDE-编辑器内核---视图---三格布局---打开存盘---后端接线-全是--Sample-库---里的纯-HB-库.html">35,自己攒一个 IDE:编辑器内核 / 视图 / 三格布局 / 打开存盘 / 后端接线(全是 `Sample\库\` 里的纯 HB 库)</a></td><td>这一节讲<strong>五个库怎么拼成一台&quot;能用的 IDE 壳&quot;</strong> - 语言面一个新名字都没加,图形那边也只用现成那 10 条原语</td></tr>
 </tbody>
 </table>
-<p class="页脚注">共 34 条。</p>
+<p class="页脚注">共 35 条。</p>
 </article>
 </main>
 </body>
